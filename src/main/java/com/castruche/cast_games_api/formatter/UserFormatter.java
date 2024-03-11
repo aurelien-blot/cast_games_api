@@ -9,6 +9,9 @@ public class UserFormatter implements IFormatter<User, UserDto>{
 
     @Override
     public UserDto entityToDto(User entity) {
+        if(entity == null){
+            return null;
+        }
         UserDto userDto = new UserDto();
         userDto.setId(entity.getId());
         userDto.setUsername(entity.getUsername());
