@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService extends GenericService<User, UserDto>{
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     private UserFormatter userFormatter;
 
     public UserService(UserRepository userRepository, UserFormatter userFormatter) {
@@ -30,6 +30,18 @@ public class UserService extends GenericService<User, UserDto>{
             response.setMessage("Nom d'utilisateur disponible.");
         } else {
             response.setMessage("Le nom d'utilisateur " + username + " est déjà utilisé. Veuillez en choisir un autre.");
+        }
+        return response;
+    }
+
+    public BooleanResponseDto checkMailAvailability(String mail) {
+        Boolean exists = userRepository.existsByEmail(mail);
+        BooleanResponseDto response = new BooleanResponseDto();
+        response.setStatus(!BooleanUtils.isTrue(exists));
+        if(response.isStatus()){
+            response.setMessage("Adresse Email disponible.");
+        } else {
+            response.setMessage("L'adresse' " + mail + " est déjà utilisée.");
         }
         return response;
     }

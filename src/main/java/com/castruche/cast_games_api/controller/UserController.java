@@ -30,8 +30,13 @@ public class UserController {
         return userService.selectDtoById(id);
     }
 
-    @GetMapping("/check-username/{username}")
+    @GetMapping("/availability/username/{username}")
     public BooleanResponseDto checkUsernameAvailability(@PathVariable("username") String username) {
         return userService.checkUsernameAvailability(username);
+    }
+
+    @GetMapping("/availability/mail/{mail}")
+    public BooleanResponseDto checkMailAvailability(@PathVariable("mail") String mail) {
+        return userService.checkMailAvailability(mail);
     }
 }
