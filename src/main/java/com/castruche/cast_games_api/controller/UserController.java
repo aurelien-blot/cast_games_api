@@ -3,10 +3,7 @@ package com.castruche.cast_games_api.controller;
 import com.castruche.cast_games_api.dto.UserDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,4 +36,10 @@ public class UserController {
     public BooleanResponseDto checkMailAvailability(@PathVariable("mail") String mail) {
         return userService.checkMailAvailability(mail);
     }
+
+    @PostMapping
+    public UserDto create(@RequestBody UserDto userDto) {
+        return userService.create(userDto);
+    }
+
 }

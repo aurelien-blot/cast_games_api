@@ -36,4 +36,10 @@ public abstract class GenericService<ENTITY, DTO> {
         List<ENTITY> entities = this.getAll();
         return formatter.entityToDto(entities);
     }
+
+    public DTO create(DTO dto) {
+        ENTITY entity = formatter.dtoToEntity(dto);
+        entity = repository.save(entity);
+        return formatter.entityToDto(entity);
+    }
 }
