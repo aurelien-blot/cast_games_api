@@ -1,17 +1,39 @@
 package com.castruche.cast_games_api.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.castruche.cast_games_api.dto.login.LoginResponseDto;
+import com.castruche.cast_games_api.dto.login.LoginUserDto;
+import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
+import com.castruche.cast_games_api.service.UserService;
+import org.springframework.web.bind.annotation.*;
 
 import static com.castruche.cast_games_api.controller.ConstantUrl.LOGIN;
 
 @RestController
 @RequestMapping(LOGIN)
 public class LoginController {
-    @GetMapping
-    public String login() {
-        //TODO: faire le login
-        return "login";
+
+    private final UserService userService;
+    public LoginController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping()
+    public LoginResponseDto login(@RequestBody LoginUserDto userDto) {
+        return userService.login(userDto);
+    }
+    @PostMapping("/register")
+    public UserDto register(@RequestBody UserDto userDto) {
+        return userService.register(userDto);
+    }
+
+    @GetMapping("/availability/username/{username}")
+    public BooleanResponseDto checkUsernameAvailability(@PathVariable("username") String username) {
+        return userService.checkUsernameAvailability(username);
+    }
+
+    @GetMapping("/availability/mail/{mail}")
+    public BooleanResponseDto checkMailAvailability(@PathVariable("mail") String mail) {
+        return userService.checkMailAvailability(mail);
     }
 }

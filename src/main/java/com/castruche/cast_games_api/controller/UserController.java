@@ -1,7 +1,6 @@
 package com.castruche.cast_games_api.controller;
 
 import com.castruche.cast_games_api.dto.UserDto;
-import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,21 +24,6 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable("id") Long id) {
         return userService.selectDtoById(id);
-    }
-
-    @GetMapping("/availability/username/{username}")
-    public BooleanResponseDto checkUsernameAvailability(@PathVariable("username") String username) {
-        return userService.checkUsernameAvailability(username);
-    }
-
-    @GetMapping("/availability/mail/{mail}")
-    public BooleanResponseDto checkMailAvailability(@PathVariable("mail") String mail) {
-        return userService.checkMailAvailability(mail);
-    }
-
-    @PostMapping
-    public UserDto create(@RequestBody UserDto userDto) {
-        return userService.create(userDto);
     }
 
 }
