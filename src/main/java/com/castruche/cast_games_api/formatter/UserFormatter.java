@@ -18,6 +18,7 @@ public class UserFormatter implements IFormatter<User, UserDto>{
         userDto.setEmail(entity.getEmail());
         userDto.setFirstName(entity.getFirstName());
         userDto.setLastName(entity.getLastName());
+        userDto.setMailVerified(entity.isMailVerified());
         return userDto;
     }
 

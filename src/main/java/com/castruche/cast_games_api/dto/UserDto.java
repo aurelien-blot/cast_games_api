@@ -10,6 +10,8 @@ public class UserDto extends AbstractDto {
     private String firstName;
     private String lastName;
 
+    private boolean mailVerified;
+
     public String getUsername() {
         return username;
     }
@@ -48,5 +50,13 @@ public class UserDto extends AbstractDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public boolean isMailVerified() {
+        return mailVerified;
+    }
+
+    public void setMailVerified(boolean mailVerified) {
+        this.mailVerified = mailVerified;
     }
 }
