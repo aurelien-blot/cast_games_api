@@ -18,6 +18,6 @@ import org.springframework.stereotype.Service;
 public class MailService{
 
     public void sendMailForMailVerification(UserDto user){
-
+        //TODO MAILJET
     }
 }

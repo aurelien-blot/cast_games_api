@@ -37,4 +37,9 @@ public class LoginController {
     public BooleanResponseDto checkMailAvailability(@PathVariable("mail") String mail) {
         return loginService.checkMailAvailability(mail);
     }
+
+    @GetMapping("/verify/mail/{token}")
+    public BooleanResponseDto verifyMail(@PathVariable("token") String token) {
+        return loginService.verifyMail(token);
+    }
 }

@@ -16,6 +16,7 @@ public class User extends AbstractEntity{
     private String lastName;
 
     private boolean mailVerified;
+    private String mailVerificationToken;
 
     public String getUsername() {
         return username;
@@ -63,5 +64,13 @@ public class User extends AbstractEntity{
 
     public void setMailVerified(boolean mailVerified) {
         this.mailVerified = mailVerified;
+    }
+
+    public String getMailVerificationToken() {
+        return mailVerificationToken;
+    }
+
+    public void setMailVerificationToken(String mailVerificationToken) {
+        this.mailVerificationToken = mailVerificationToken;
     }
 }

@@ -93,4 +93,21 @@ public class LoginService extends GenericService<User, UserDto>{
         return response;
     }
 
+    @Transactional
+    public BooleanResponseDto verifyMail(String token) {
+        User user = userRepository.findByMailVerificationToken(token);
+        BooleanResponseDto response = new BooleanResponseDto();
+        if(user == null){
+            response.setStatus(false);
+            response.setMessage("Token invalide.");
+        } else {
+            user.setMailVerificationToken(null);
+            user.setMailVerified(true);
+            userRepository.save(user);
+            response.setStatus(true);
+            response.setMessage("Email vérifié.");
+        }
+        return response;
+    }
+
 }
