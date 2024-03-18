@@ -1,0 +1,1 @@
+ALTER TABLE user ADD COLUMN mail_verification_token VARCHAR(255) NULL;
