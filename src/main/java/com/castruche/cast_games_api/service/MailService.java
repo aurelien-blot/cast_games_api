@@ -31,12 +31,25 @@ public class MailService{
     private String apiKey;
     @Value("${mailjet.api.secret}")
     private String apiSecret;
+    @Value("${mail.noreply.email}")
+    private String noReplyEmail;
+    @Value("${mail.noreply.name}")
+    private String noReplyName;
+    @Value("${front.baseUrl}")
+    private String frontBaseUrl;
+    @Value("${mailjet.verify.mail.id}")
+    private String mailVerificationId;
 
-    public void sendMailForMailVerification(UserDto user){
-        this.sendMail();
+    public void sendMailForMailVerification(UserDto user, String verificationToken){
+        String href = frontBaseUrl+"/verify/mail?token=" + verificationToken;
+        Integer templateId = Integer.parseInt(mailVerificationId);
+        this.sendNoReplyMail(user.getEmail(), user.getFirstName(), templateId);
     }
 
-    private void sendMail(){
+    private void sendNoReplyMail(String receiverEmail, String receiverName, Integer templateId){
+        this.sendMail(noReplyEmail, noReplyName, receiverEmail, receiverName, templateId);
+    }
+    private void sendMail(String senderEmail, String senderName, String receiverEmail, String receiverName, Integer templateId){
         try {
             MailjetClient client;
             MailjetRequest request;
@@ -49,19 +62,19 @@ public class MailService{
                     .property(Emailv31.MESSAGES, new JSONArray()
                             .put(new JSONObject()
                                     .put(Emailv31.Message.FROM, new JSONObject()
-                                            .put("Email", "aurelien.blot@gmail.com")
-                                            .put("Name", "Aurélien"))
+                                            .put("Email", senderEmail)
+                                            .put("Name", senderName))
                                     .put(Emailv31.Message.TO, new JSONArray()
                                             .put(new JSONObject()
-                                                    .put("Email", "aurelien.blot@gmail.com")
-                                                    .put("Name", "Aurélien")))
-                                    .put(Emailv31.Message.SUBJECT, "Greetings from Mailjet.")
-                                    .put(Emailv31.Message.TEXTPART, "My first Mailjet email")
-                                    .put(Emailv31.Message.HTMLPART, "<h3>Dear passenger 1, welcome to <a href='https://www.mailjet.com/'>Mailjet</a>!</h3><br />May the delivery force be with you!")
-                                    .put(Emailv31.Message.CUSTOMID, "AppGettingStartedTest")));
-            response = client.post(request);
-            System.out.println(response.getStatus());
-            System.out.println(response.getData());
+                                                    .put("Email", receiverEmail)
+                                                    .put("Name", receiverName)))
+                                    .put(Emailv31.Message.TEMPLATEID, templateId)
+                                    .put(Emailv31.Message.TEMPLATELANGUAGE, true)
+                            ));
+            response= client.post(request);
+            if(response.getStatus() != 200){
+                throw new MailjetException(response.getData().toString());
+            }
         }
         catch (MailjetException | MailjetSocketTimeoutException e) {
             e.printStackTrace();

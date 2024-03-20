@@ -22,7 +22,10 @@ public class TestController {
 
     @GetMapping("/mail")
     public void testMail() {
-        mailService.sendMailForMailVerification(new UserDto());
+        UserDto userDto = new UserDto();
+        userDto.setEmail("ch07@hotmail.fr");
+        userDto.setFirstName("Jacky");
+        mailService.sendMailForMailVerification(userDto, "12345678");
     }
 
 }

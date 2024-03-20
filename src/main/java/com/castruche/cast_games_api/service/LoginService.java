@@ -61,9 +61,10 @@ public class LoginService extends GenericService<User, UserDto>{
         String password = userDto.getPassword();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(password));
+        user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
         this.userRepository.save(user);
         UserDto userDtoSaved = selectDtoById(user.getId());
-        this.mailService.sendMailForMailVerification(userDtoSaved);
+        this.mailService.sendMailForMailVerification(userDtoSaved, user.getMailVerificationToken());
         return userDtoSaved;
     }
 
