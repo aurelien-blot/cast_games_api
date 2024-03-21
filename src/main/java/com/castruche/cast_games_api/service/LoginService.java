@@ -9,15 +9,19 @@ import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
+import com.castruche.cast_games_api.service.util.SettingService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService extends GenericService<User, UserDto>{
 
+    private static final Logger logger = LogManager.getLogger(LoginService.class);
     private final UserRepository userRepository;
     private UserFormatter userFormatter;
     private JwtUtil jwtTokenUtil;
@@ -65,6 +69,7 @@ public class LoginService extends GenericService<User, UserDto>{
         user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
         this.userRepository.save(user);
         UserDto userDtoSaved = selectDtoById(user.getId());
+        this.mailService.sendMailForRegistration(userDtoSaved);
         this.mailService.sendMailForMailVerification(userDtoSaved, user.getMailVerificationToken());
         return userDtoSaved;
     }

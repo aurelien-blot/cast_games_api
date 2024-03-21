@@ -9,6 +9,8 @@ import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.errors.MailjetException;
 import com.mailjet.client.errors.MailjetSocketTimeoutException;
 import com.mailjet.client.resource.Emailv31;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -16,27 +18,45 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailService{
 
-    private SettingService settingService;
+    private static final Logger logger = LogManager.getLogger(MailService.class);
+    private final String VAR_APP_LINK = "app_link";
+    private static final String VAR_USERNAME = "username";
+    private static final String VAR_CONFIRMATION_LINK = "confirmation_link";
+    private final SettingService settingService;
 
     public MailService(SettingService settingService) {
         this.settingService = settingService;
     }
 
     public void sendMailForMailVerification(UserDto user, String verificationToken){
+        MailObjectDto mailObjectDto = initNoReplyMailObject(user);
+
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationId()));
+        String frontBaseUrl = settingService.getFrontBaseUrl();
+        if(null!=frontBaseUrl && !frontBaseUrl.isEmpty()){
+            mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
+        }
+        this.sendMail(mailObjectDto);
+    }
+
+    public void sendMailForRegistration(UserDto user){
+        MailObjectDto mailObjectDto = initNoReplyMailObject(user);
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailRegistrationId()));
+        this.sendMail(mailObjectDto);
+    }
+
+    private MailObjectDto initNoReplyMailObject(UserDto user){
         MailObjectDto mailObjectDto = new MailObjectDto();
         mailObjectDto.setSenderEmail(settingService.getNoReplyEmail());
         mailObjectDto.setSenderName(settingService.getNoReplyName());
         mailObjectDto.setReceiverEmail(user.getEmail());
         mailObjectDto.setReceiverName(user.getFirstName());
-        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationId()));
         JSONObject variables = new JSONObject();
-        String frontBaseUrl = settingService.getFrontBaseUrl();
-        if(null!=frontBaseUrl && !frontBaseUrl.isEmpty()){
-            variables.put("confirmation_link", frontBaseUrl+"/confirm-mail?token=" + verificationToken);
-        }
-        variables.put("username", user.getUsername());
         mailObjectDto.setVariables(variables);
-        this.sendMail(mailObjectDto);
+        String frontBaseUrl = settingService.getFrontBaseUrl();
+        mailObjectDto.getVariables().put(VAR_APP_LINK, frontBaseUrl);
+        mailObjectDto.getVariables().put(VAR_USERNAME, user.getUsername());
+        return mailObjectDto;
     }
 
     private void sendMail(MailObjectDto mailObjectDto){
@@ -74,7 +94,7 @@ public class MailService{
             }
         }
         catch (MailjetException | MailjetSocketTimeoutException e) {
-            e.printStackTrace();
+            logger.error("Mailjet error: " + e.getMessage());
         }
     }
 }

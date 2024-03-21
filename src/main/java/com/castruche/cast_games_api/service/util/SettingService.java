@@ -2,11 +2,14 @@ package com.castruche.cast_games_api.service.util;
 
 import com.castruche.cast_games_api.dao.util.SettingRepository;
 import com.castruche.cast_games_api.entity.util.Setting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SettingService {
 
+    private static final Logger logger = LogManager.getLogger(SettingService.class);
     private SettingRepository settingRepository;
 
     public SettingService(SettingRepository settingRepository) {
@@ -47,6 +50,9 @@ public class SettingService {
 
     public String getMailVerificationId() {
         return getSettingValueByShortName("mailjet_verify_mail_id");
+    }
+    public String getMailRegistrationId() {
+        return getSettingValueByShortName("mailjet_registration_id");
     }
 
 }
