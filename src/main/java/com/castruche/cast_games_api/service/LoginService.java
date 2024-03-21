@@ -5,11 +5,11 @@ import com.castruche.cast_games_api.dao.UserRepository;
 import com.castruche.cast_games_api.dto.UserDto;
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
+import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
-import com.castruche.cast_games_api.service.util.SettingService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.BooleanUtils;
@@ -113,6 +113,26 @@ public class LoginService extends GenericService<User, UserDto>{
             userRepository.save(user);
             response.setStatus(true);
             response.setMessage("Email vérifié.");
+        }
+        return response;
+    }
+
+    @Transactional
+    public BooleanResponseDto sendResetPasswordMail(UserMailDto userMailDto) {
+        String mail = userMailDto.getEmail();
+        BooleanResponseDto response = new BooleanResponseDto();
+        User user = userRepository.findByEmail(mail);
+        response.setStatus(true);
+        if(user == null){
+            //On ne précise pas volontairement si l'email existe ou non pour des raisons de sécurité
+            response.setMessage("Email non envoyé.");
+        }
+        else {
+            user.setResetPasswordToken(jwtTokenUtil.generateToken(user.getEmail()));
+            this.userRepository.save(user);
+            UserDto userDtoSaved = selectDtoById(user.getId());
+            this.mailService.sendMailForPasswordReset(userDtoSaved, user.getResetPasswordToken());
+            response.setMessage("Email envoyé.");
         }
         return response;
     }

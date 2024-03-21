@@ -54,5 +54,8 @@ public class SettingService {
     public String getMailRegistrationId() {
         return getSettingValueByShortName("mailjet_registration_id");
     }
+    public String getMailResetPasswordId() {
+        return getSettingValueByShortName("mailjet_reset_password_id");
+    }
 
 }

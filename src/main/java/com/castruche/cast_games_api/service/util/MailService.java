@@ -22,6 +22,7 @@ public class MailService{
     private final String VAR_APP_LINK = "app_link";
     private static final String VAR_USERNAME = "username";
     private static final String VAR_CONFIRMATION_LINK = "confirmation_link";
+    private static final String VAR_RESET_PASSWORD_LINK = "reset_password_link";
     private final SettingService settingService;
 
     public MailService(SettingService settingService) {
@@ -30,18 +31,22 @@ public class MailService{
 
     public void sendMailForMailVerification(UserDto user, String verificationToken){
         MailObjectDto mailObjectDto = initNoReplyMailObject(user);
-
         mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationId()));
-        String frontBaseUrl = settingService.getFrontBaseUrl();
-        if(null!=frontBaseUrl && !frontBaseUrl.isEmpty()){
-            mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
-        }
+        mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
         this.sendMail(mailObjectDto);
     }
 
     public void sendMailForRegistration(UserDto user){
         MailObjectDto mailObjectDto = initNoReplyMailObject(user);
         mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailRegistrationId()));
+        this.sendMail(mailObjectDto);
+    }
+
+    public void sendMailForPasswordReset(UserDto user, String resetPasswordToken){
+        MailObjectDto mailObjectDto = initNoReplyMailObject(user);
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailResetPasswordId()));
+        mailObjectDto.getVariables().put(VAR_RESET_PASSWORD_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/reset-password?token=" + resetPasswordToken);
+
         this.sendMail(mailObjectDto);
     }
 

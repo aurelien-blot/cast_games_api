@@ -3,8 +3,8 @@ package com.castruche.cast_games_api.controller;
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
 import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
-import com.castruche.cast_games_api.service.LoginService;
 import com.castruche.cast_games_api.service.LoginService;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,4 +42,10 @@ public class LoginController {
     public BooleanResponseDto verifyMail(@PathVariable("token") String token) {
         return loginService.verifyMail(token);
     }
+
+    @PostMapping("/reset-password/request")
+    public BooleanResponseDto sendResetPasswordMail(@RequestBody UserMailDto userMailDto) {
+        return loginService.sendResetPasswordMail(userMailDto);
+    }
+
 }
