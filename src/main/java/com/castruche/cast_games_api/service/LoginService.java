@@ -5,6 +5,7 @@ import com.castruche.cast_games_api.dao.UserRepository;
 import com.castruche.cast_games_api.dto.UserDto;
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
+import com.castruche.cast_games_api.dto.util.ResetPasswordDto;
 import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.entity.User;
@@ -133,6 +134,39 @@ public class LoginService extends GenericService<User, UserDto>{
             UserDto userDtoSaved = selectDtoById(user.getId());
             this.mailService.sendMailForPasswordReset(userDtoSaved, user.getResetPasswordToken());
             response.setMessage("Email envoyé.");
+        }
+        return response;
+    }
+
+    @Transactional
+    public BooleanResponseDto resetPassword(ResetPasswordDto resetPasswordDto) {
+        BooleanResponseDto response = new BooleanResponseDto();
+
+        if(resetPasswordDto == null || resetPasswordDto.getToken() ==null || resetPasswordDto.getPassword() ==null){
+            response.setStatus(false);
+            response.setMessage("Une donnée est manquante.");
+            return response;
+        }
+
+        User user = userRepository.findByResetPasswordToken(resetPasswordDto.getToken());
+
+        if(user == null){
+            response.setStatus(false);
+            response.setMessage("Token invalide.");
+        }
+        else {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            if(encoder.matches(resetPasswordDto.getPassword(), user.getPassword())){
+                response.setStatus(false);
+                response.setMessage("Le nouveau mot de passe doit être différent de l'ancien.");
+            }
+            else{
+                user.setPassword(encoder.encode(resetPasswordDto.getPassword()));
+                user.setResetPasswordToken(null);
+                userRepository.save(user);
+                response.setStatus(true);
+                response.setMessage("Mot de passe réinitialisé.");
+            }
         }
         return response;
     }

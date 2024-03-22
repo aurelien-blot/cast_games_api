@@ -3,6 +3,7 @@ package com.castruche.cast_games_api.controller;
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
 import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.util.ResetPasswordDto;
 import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.service.LoginService;
@@ -46,6 +47,11 @@ public class LoginController {
     @PostMapping("/reset-password/request")
     public BooleanResponseDto sendResetPasswordMail(@RequestBody UserMailDto userMailDto) {
         return loginService.sendResetPasswordMail(userMailDto);
+    }
+
+    @PostMapping("/reset-password")
+    public BooleanResponseDto resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        return loginService.resetPassword(resetPasswordDto);
     }
 
 }
