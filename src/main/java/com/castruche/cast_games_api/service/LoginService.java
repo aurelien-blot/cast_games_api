@@ -8,6 +8,7 @@ import com.castruche.cast_games_api.dto.login.LoginUserDto;
 import com.castruche.cast_games_api.dto.util.ResetPasswordDto;
 import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
+import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
@@ -26,15 +27,20 @@ public class LoginService extends GenericService<User, UserDto>{
     private final UserRepository userRepository;
     private UserFormatter userFormatter;
     private JwtUtil jwtTokenUtil;
-
     private MailService mailService;
+    private PlayerService playerService;
 
-    public LoginService(UserRepository userRepository, UserFormatter userFormatter, JwtUtil jwtTokenUtil, MailService mailService) {
+    public LoginService(UserRepository userRepository,
+                        UserFormatter userFormatter,
+                        JwtUtil jwtTokenUtil,
+                        MailService mailService,
+                        PlayerService playerService) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
         this.userFormatter = userFormatter;
         this.jwtTokenUtil = jwtTokenUtil;
         this.mailService = mailService;
+        this.playerService = playerService;
     }
 
     public BooleanResponseDto checkUsernameAvailability(String username) {
@@ -68,6 +74,9 @@ public class LoginService extends GenericService<User, UserDto>{
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(password));
         user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
+        this.userRepository.save(user);
+        Player newPlayer = playerService.initPlayer(user);
+        user.setPlayer(newPlayer);
         this.userRepository.save(user);
         UserDto userDtoSaved = selectDtoById(user.getId());
         this.mailService.sendMailForRegistration(userDtoSaved);

@@ -7,4 +7,5 @@ public class ConstantUrl {
     public static final String USER = ROOT + "/user";
     public static final String GAME = ROOT + "/game";
     public static final String TEST = ROOT + "/test";
+    public static final String PLAYER = ROOT + "/player";
 }

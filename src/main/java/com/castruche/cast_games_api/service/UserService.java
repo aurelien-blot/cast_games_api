@@ -23,10 +23,10 @@ public class UserService extends GenericService<User, UserDto>{
 
     private static final Logger logger = LogManager.getLogger(UserService.class);
 
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     private UserFormatter userFormatter;
 
-    public UserService(UserRepository userRepository, UserFormatter userFormatter, JwtUtil jwtTokenUtil) {
+    public UserService(UserRepository userRepository, UserFormatter userFormatter) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
         this.userFormatter = userFormatter;

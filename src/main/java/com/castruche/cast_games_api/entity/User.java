@@ -1,14 +1,14 @@
 package com.castruche.cast_games_api.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
 @Entity
 public class User extends AbstractEntity{
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Player player;
     private String username;
     private String password;
     private String email;
@@ -81,5 +81,13 @@ public class User extends AbstractEntity{
 
     public void setResetPasswordToken(String resetPasswordToken) {
         this.resetPasswordToken = resetPasswordToken;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }
