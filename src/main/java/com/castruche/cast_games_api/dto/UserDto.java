@@ -10,6 +10,8 @@ public class UserDto extends AbstractDto {
     private String firstName;
     private String lastName;
 
+    private Long playerId;
+
     private boolean mailVerified;
 
     public String getUsername() {
@@ -58,5 +60,13 @@ public class UserDto extends AbstractDto {
 
     public void setMailVerified(boolean mailVerified) {
         this.mailVerified = mailVerified;
+    }
+
+    public Long getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(Long playerId) {
+        this.playerId = playerId;
     }
 }
