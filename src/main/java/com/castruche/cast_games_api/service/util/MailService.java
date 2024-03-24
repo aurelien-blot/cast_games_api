@@ -1,7 +1,7 @@
 package com.castruche.cast_games_api.service.util;
 
 import com.castruche.cast_games_api.dto.util.MailObjectDto;
-import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.user.UserDto;
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;

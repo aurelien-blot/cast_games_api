@@ -2,7 +2,7 @@ package com.castruche.cast_games_api.service;
 
 import com.castruche.cast_games_api.configuration.JwtUtil;
 import com.castruche.cast_games_api.dao.UserRepository;
-import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
 import com.castruche.cast_games_api.dto.util.ResetPasswordDto;

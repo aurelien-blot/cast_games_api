@@ -1,5 +1,6 @@
-package com.castruche.cast_games_api.dto;
+package com.castruche.cast_games_api.dto.user;
 
+import com.castruche.cast_games_api.dto.AbstractDto;
 import com.castruche.cast_games_api.entity.AbstractEntity;
 import jakarta.persistence.Entity;
 

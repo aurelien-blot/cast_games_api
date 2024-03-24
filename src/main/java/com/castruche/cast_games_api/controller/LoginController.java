@@ -2,7 +2,7 @@ package com.castruche.cast_games_api.controller;
 
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
-import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.dto.util.ResetPasswordDto;
 import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;

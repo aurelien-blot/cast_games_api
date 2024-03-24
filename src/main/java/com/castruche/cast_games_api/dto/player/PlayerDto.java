@@ -1,4 +1,6 @@
-package com.castruche.cast_games_api.dto;
+package com.castruche.cast_games_api.dto.player;
+
+import com.castruche.cast_games_api.dto.AbstractDto;
 
 public class PlayerDto extends AbstractDto {
     private String username;

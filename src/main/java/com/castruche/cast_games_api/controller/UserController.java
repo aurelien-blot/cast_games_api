@@ -1,6 +1,6 @@
 package com.castruche.cast_games_api.controller;
 
-import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.service.UserService;
 import org.springframework.web.bind.annotation.*;
 

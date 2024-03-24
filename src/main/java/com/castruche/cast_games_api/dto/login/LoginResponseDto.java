@@ -1,7 +1,7 @@
 package com.castruche.cast_games_api.dto.login;
 
 import com.castruche.cast_games_api.dto.AbstractDto;
-import com.castruche.cast_games_api.dto.UserDto;
+import com.castruche.cast_games_api.dto.user.UserDto;
 
 public class LoginResponseDto extends AbstractDto {
 
