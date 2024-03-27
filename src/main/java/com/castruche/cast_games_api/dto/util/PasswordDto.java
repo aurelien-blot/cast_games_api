@@ -1,6 +1,6 @@
 package com.castruche.cast_games_api.dto.util;
 
-public class ResetPasswordDto {
+public class PasswordDto {
     private String token;
     private String password;
 

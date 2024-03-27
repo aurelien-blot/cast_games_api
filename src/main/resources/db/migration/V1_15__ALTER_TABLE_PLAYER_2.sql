@@ -1,0 +1,1 @@
+ALTER TABLE player MODIFY COLUMN user_id INT NULL

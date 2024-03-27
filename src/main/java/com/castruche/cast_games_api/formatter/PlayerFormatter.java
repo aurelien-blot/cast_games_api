@@ -12,13 +12,11 @@ public class PlayerFormatter implements IFormatter<Player, PlayerDto>{
         if(entity == null){
             return null;
         }
-        PlayerDto playerDto = new PlayerDto();
-        playerDto.setId(entity.getId());
-        if(entity.getUser() != null){
-            playerDto.setUsername(entity.getUser().getUsername());
-        }
-
-        return playerDto;
+        PlayerDto dto = new PlayerDto();
+        dto.setId(entity.getId());
+        dto.setUsername(entity.getUsername());
+        dto.setArchived(entity.isArchived());
+        return dto;
     }
 
     @Override
@@ -30,17 +28,18 @@ public class PlayerFormatter implements IFormatter<Player, PlayerDto>{
     public PlayerProfileDto entityToInternalProfileDto(Player entity) {
         PlayerProfileDto dto = new PlayerProfileDto();
         dto.setId(entity.getId());
-        if(entity.getUser() != null){
-            dto.setUsername(entity.getUser().getUsername());
-        }
+        dto.setUsername(entity.getUsername());
+        dto.setArchived(entity.isArchived());
         return dto;
     }
 
     public PlayerProfileDto entityToExternalProfileDto(Player entity) {
         PlayerProfileDto dto = new PlayerProfileDto();
         dto.setId(entity.getId());
-        if(entity.getUser() != null){
-            dto.setUsername(entity.getUser().getUsername());
+        dto.setUsername(entity.getUsername());
+        dto.setArchived(entity.isArchived());
+        if(!dto.isArchived()){
+
         }
         return dto;
     }
@@ -48,36 +47,28 @@ public class PlayerFormatter implements IFormatter<Player, PlayerDto>{
     public PlayerSocialDto entityToSocialDto(Player entity) {
         PlayerSocialDto dto = new PlayerSocialDto();
         dto.setId(entity.getId());
-        if(entity.getUser() != null){
-            dto.setUsername(entity.getUser().getUsername());
-        }
+        dto.setUsername(entity.getUsername());
         return dto;
     }
 
     public PlayerHistoryDto entityToHistoryDto(Player entity) {
         PlayerHistoryDto dto = new PlayerHistoryDto();
         dto.setId(entity.getId());
-        if(entity.getUser() != null){
-            dto.setUsername(entity.getUser().getUsername());
-        }
+        dto.setUsername(entity.getUsername());
         return dto;
     }
 
     public PlayerSettingsDto entityToSettingsDto(Player entity) {
         PlayerSettingsDto dto = new PlayerSettingsDto();
         dto.setId(entity.getId());
-        if(entity.getUser() != null){
-            dto.setUsername(entity.getUser().getUsername());
-        }
+        dto.setUsername(entity.getUsername());
         return dto;
     }
 
     public PlayerStatisticsDto entityToStatisticsDto(Player entity) {
         PlayerStatisticsDto dto = new PlayerStatisticsDto();
         dto.setId(entity.getId());
-        if(entity.getUser() != null){
-            dto.setUsername(entity.getUser().getUsername());
-        }
+        dto.setUsername(entity.getUsername());
         return dto;
     }
 

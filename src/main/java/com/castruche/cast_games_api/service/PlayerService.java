@@ -19,19 +19,21 @@ public class PlayerService extends GenericService<Player, PlayerDto>{
 
     private PlayerRepository playerRepository;
     private PlayerFormatter playerFormatter;
+    private ConnectedUserService connectedUserService;
 
-    private UserService userService;
-
-    public PlayerService(PlayerRepository playerRepository, PlayerFormatter playerFormatter, UserService userService){
+    public PlayerService(PlayerRepository playerRepository, PlayerFormatter playerFormatter,
+                         ConnectedUserService connectedUserService){
         super(playerRepository, playerFormatter);
         this.playerRepository = playerRepository;
         this.playerFormatter = playerFormatter;
-        this.userService = userService;
+        this.connectedUserService = connectedUserService;
     }
 
     public Player initPlayer(User user){
         Player player = new Player();
         player.setUser(user);
+        player.setArchived(false);
+        player.setUsername(user.getUsername());
         player = this.playerRepository.save(player);
         return player;
     }
@@ -41,7 +43,7 @@ public class PlayerService extends GenericService<Player, PlayerDto>{
             return null;
         }
         Player player = this.selectById(playerId);
-        boolean isInternalProfile= this.userService.isCurrentUserByPlayerId(playerId);
+        boolean isInternalProfile= this.connectedUserService.isCurrentUserByPlayerId(playerId);
         if(isInternalProfile){
             return this.playerFormatter.entityToInternalProfileDto(player);
         }
@@ -85,9 +87,16 @@ public class PlayerService extends GenericService<Player, PlayerDto>{
     }
 
     private void checkPlayerAccess(Long playerId){
-        boolean isInternalProfile= this.userService.isCurrentUserByPlayerId(playerId);
+        boolean isInternalProfile= this.connectedUserService.isCurrentUserByPlayerId(playerId);
         if(!isInternalProfile){
             throw new AccessDeniedException("You are not allowed to access this profile");
+        }
+    }
+
+    public void detachPlayerFromUser(Player player){
+        if(player != null){
+            player.setUser(null);
+            player.setArchived(true);
         }
     }
 

@@ -5,13 +5,14 @@ import com.castruche.cast_games_api.dao.UserRepository;
 import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.dto.login.LoginResponseDto;
 import com.castruche.cast_games_api.dto.login.LoginUserDto;
-import com.castruche.cast_games_api.dto.util.ResetPasswordDto;
+import com.castruche.cast_games_api.dto.util.PasswordDto;
 import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
+import com.castruche.cast_games_api.service.util.TypeFormatService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.BooleanUtils;
@@ -29,17 +30,20 @@ public class LoginService extends GenericService<User, UserDto>{
     private JwtUtil jwtTokenUtil;
     private MailService mailService;
     private PlayerService playerService;
+    private TypeFormatService typeFormatService;
 
     public LoginService(UserRepository userRepository,
                         UserFormatter userFormatter,
                         JwtUtil jwtTokenUtil,
                         MailService mailService,
-                        PlayerService playerService) {
+                        PlayerService playerService,
+                        TypeFormatService typeFormatService) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
         this.userFormatter = userFormatter;
         this.jwtTokenUtil = jwtTokenUtil;
         this.mailService = mailService;
+        this.typeFormatService = typeFormatService;
         this.playerService = playerService;
     }
 
@@ -69,6 +73,7 @@ public class LoginService extends GenericService<User, UserDto>{
 
     @Transactional
     public UserDto register(UserDto userDto) {
+        this.checkUserRegistrationValidity(userDto);
         User user = userFormatter.dtoToEntity(userDto);
         String password = userDto.getPassword();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -82,6 +87,15 @@ public class LoginService extends GenericService<User, UserDto>{
         this.mailService.sendMailForRegistration(userDtoSaved);
         this.mailService.sendMailForMailVerification(userDtoSaved, user.getMailVerificationToken());
         return userDtoSaved;
+    }
+
+    private void checkUserRegistrationValidity(UserDto userDto){
+        if(userDto==null || userDto.getUsername() ==null || userDto.getEmail() ==null || userDto.getPassword() ==null){
+            throw new IllegalArgumentException("Données manquantes.");
+        }
+        if(!typeFormatService.isMail(userDto.getEmail()) && userDto.getPassword().length()<8){
+            throw new IllegalArgumentException("Données invalides.");
+        }
     }
 
     public LoginResponseDto login(LoginUserDto userDto) throws EntityNotFoundException {
@@ -148,16 +162,21 @@ public class LoginService extends GenericService<User, UserDto>{
     }
 
     @Transactional
-    public BooleanResponseDto resetPassword(ResetPasswordDto resetPasswordDto) {
+    public BooleanResponseDto resetPassword(PasswordDto passwordDto) {
         BooleanResponseDto response = new BooleanResponseDto();
 
-        if(resetPasswordDto == null || resetPasswordDto.getToken() ==null || resetPasswordDto.getPassword() ==null){
+        if(passwordDto == null || passwordDto.getToken() ==null || passwordDto.getPassword() ==null){
             response.setStatus(false);
             response.setMessage("Une donnée est manquante.");
             return response;
         }
+        if(passwordDto.getPassword().length()<8){
+            response.setStatus(false);
+            response.setMessage("Le mot de passe doit contenir au moins 8 caractères.");
+            return response;
+        }
 
-        User user = userRepository.findByResetPasswordToken(resetPasswordDto.getToken());
+        User user = userRepository.findByResetPasswordToken(passwordDto.getToken());
 
         if(user == null){
             response.setStatus(false);
@@ -165,12 +184,12 @@ public class LoginService extends GenericService<User, UserDto>{
         }
         else {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            if(encoder.matches(resetPasswordDto.getPassword(), user.getPassword())){
+            if(encoder.matches(passwordDto.getPassword(), user.getPassword())){
                 response.setStatus(false);
                 response.setMessage("Le nouveau mot de passe doit être différent de l'ancien.");
             }
             else{
-                user.setPassword(encoder.encode(resetPasswordDto.getPassword()));
+                user.setPassword(encoder.encode(passwordDto.getPassword()));
                 user.setResetPasswordToken(null);
                 userRepository.save(user);
                 response.setStatus(true);

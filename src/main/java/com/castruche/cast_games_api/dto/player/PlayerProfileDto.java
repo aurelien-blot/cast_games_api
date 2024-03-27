@@ -7,6 +7,8 @@ public class PlayerProfileDto {
     private Long id;
     private String username;
 
+    private boolean archived;
+
     public Long getId() {
         return id;
     }
@@ -21,5 +23,13 @@ public class PlayerProfileDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }
