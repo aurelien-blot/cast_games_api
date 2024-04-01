@@ -2,6 +2,7 @@ package com.castruche.cast_games_api.controller;
 
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.dto.user.UserDto;
+import com.castruche.cast_games_api.dto.util.MailUpdateDto;
 import com.castruche.cast_games_api.dto.util.PasswordDto;
 import com.castruche.cast_games_api.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,11 @@ public class UserController {
     @PostMapping("/delete-account")
     public BooleanResponseDto deleteAccount(@RequestBody PasswordDto passwordDto) {
         return userService.deleteAccount(passwordDto);
+    }
+
+    @PostMapping("/update-mail")
+    public BooleanResponseDto updateMail(@RequestBody MailUpdateDto mailUpdateDto) {
+        return userService.updateMail(mailUpdateDto);
     }
 
 }
