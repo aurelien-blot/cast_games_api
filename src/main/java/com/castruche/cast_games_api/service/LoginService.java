@@ -10,8 +10,10 @@ import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
+import com.castruche.cast_games_api.entity.util.Setting;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
+import com.castruche.cast_games_api.service.util.SettingService;
 import com.castruche.cast_games_api.service.util.TypeFormatService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -32,10 +34,13 @@ public class LoginService extends GenericService<User, UserDto>{
     private PlayerService playerService;
     private TypeFormatService typeFormatService;
 
+    private SettingService settingService;
+
     public LoginService(UserRepository userRepository,
                         UserFormatter userFormatter,
                         JwtUtil jwtTokenUtil,
                         MailService mailService,
+                        SettingService settingService,
                         PlayerService playerService,
                         TypeFormatService typeFormatService) {
         super(userRepository, userFormatter);
@@ -45,6 +50,7 @@ public class LoginService extends GenericService<User, UserDto>{
         this.mailService = mailService;
         this.typeFormatService = typeFormatService;
         this.playerService = playerService;
+        this.settingService = settingService;
     }
 
     public BooleanResponseDto checkUsernameAvailability(String username) {
@@ -122,6 +128,28 @@ public class LoginService extends GenericService<User, UserDto>{
             response.setMessage("Identifiants incorrects.");
         }
         return response;
+    }
+
+    @Transactional
+    public boolean checkPassword(String password, User user) {
+        boolean result= false;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        result= encoder.matches(password, user.getPassword());
+        if(!result){
+            user.setTentatives(user.getTentatives()+1);
+        }
+
+    }
+
+    private void checkTentativesConnexions(User user) {
+        Integer tentativesMax = settingService.getTentativesBeforeBlocking();
+        if(null==tentativesMax){
+           throw new IllegalArgumentException("Le nombre de tentatives avant blocage n'est pas défini.");
+        }
+        if(user.getTentatives()>=tentativesMax){
+            user.setBlocked(true);
+            //TODO: GERER BLOCAGE ET DAI
+        }
     }
 
     @Transactional

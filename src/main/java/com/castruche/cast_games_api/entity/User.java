@@ -19,6 +19,10 @@ public class User extends AbstractEntity{
     private String mailVerificationToken;
     private String resetPasswordToken;
 
+    private boolean blocked;
+
+    private int tentatives;
+
     public String getUsername() {
         return username;
     }
@@ -89,5 +93,21 @@ public class User extends AbstractEntity{
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public int getTentatives() {
+        return tentatives;
+    }
+
+    public void setTentatives(int tentatives) {
+        this.tentatives = tentatives;
     }
 }

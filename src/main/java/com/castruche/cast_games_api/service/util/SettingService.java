@@ -57,5 +57,14 @@ public class SettingService {
     public String getMailResetPasswordId() {
         return getSettingValueByShortName("mailjet_reset_password_id");
     }
+    public Integer getTentativesBeforeBlocking() {
+        String result =  getSettingValueByShortName("tentatives_before_blocking");
+        try {
+            return Integer.parseInt(result);
+        } catch (NumberFormatException e) {
+            logger.error("Error while parsing tentatives_before_blocking setting", e);
+        }
+        return null;
+    }
 
 }
