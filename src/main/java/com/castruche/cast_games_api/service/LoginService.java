@@ -33,15 +33,14 @@ public class LoginService extends GenericService<User, UserDto>{
     private MailService mailService;
     private PlayerService playerService;
     private TypeFormatService typeFormatService;
-
-    private SettingService settingService;
+    private SecurityService securityService;
 
     public LoginService(UserRepository userRepository,
                         UserFormatter userFormatter,
                         JwtUtil jwtTokenUtil,
                         MailService mailService,
-                        SettingService settingService,
                         PlayerService playerService,
+                        SecurityService securityService,
                         TypeFormatService typeFormatService) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
@@ -50,7 +49,7 @@ public class LoginService extends GenericService<User, UserDto>{
         this.mailService = mailService;
         this.typeFormatService = typeFormatService;
         this.playerService = playerService;
-        this.settingService = settingService;
+        this.securityService = securityService;
     }
 
     public BooleanResponseDto checkUsernameAvailability(String username) {
@@ -82,8 +81,7 @@ public class LoginService extends GenericService<User, UserDto>{
         this.checkUserRegistrationValidity(userDto);
         User user = userFormatter.dtoToEntity(userDto);
         String password = userDto.getPassword();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(password));
+        user.setPassword(this.securityService.encodePassword(password));
         user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
         this.userRepository.save(user);
         Player newPlayer = playerService.initPlayer(user);
@@ -104,6 +102,7 @@ public class LoginService extends GenericService<User, UserDto>{
         }
     }
 
+    @Transactional
     public LoginResponseDto login(LoginUserDto userDto) throws EntityNotFoundException {
         LoginResponseDto response = new LoginResponseDto();
         User user = userRepository.findByUsername(userDto.getIdentifier());
@@ -115,8 +114,8 @@ public class LoginService extends GenericService<User, UserDto>{
             response.setMessage("Utilisateur non trouvé.");
             return response;
         }
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if(encoder.matches(userDto.getPassword(), user.getPassword())){
+        BooleanResponseDto checkPasswordResponse = securityService.checkPassword(userDto.getPassword(), user);
+        if(checkPasswordResponse.isStatus()){
             response.setSuccess(true);
             response.setMessage("Connexion réussie.");
             final String token = jwtTokenUtil.generateToken(user.getUsername());
@@ -125,32 +124,11 @@ public class LoginService extends GenericService<User, UserDto>{
         }
         else{
             response.setSuccess(false);
-            response.setMessage("Identifiants incorrects.");
+            response.setMessage(checkPasswordResponse.getMessage());
         }
         return response;
     }
 
-    @Transactional
-    public boolean checkPassword(String password, User user) {
-        boolean result= false;
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        result= encoder.matches(password, user.getPassword());
-        if(!result){
-            user.setTentatives(user.getTentatives()+1);
-        }
-
-    }
-
-    private void checkTentativesConnexions(User user) {
-        Integer tentativesMax = settingService.getTentativesBeforeBlocking();
-        if(null==tentativesMax){
-           throw new IllegalArgumentException("Le nombre de tentatives avant blocage n'est pas défini.");
-        }
-        if(user.getTentatives()>=tentativesMax){
-            user.setBlocked(true);
-            //TODO: GERER BLOCAGE ET DAI
-        }
-    }
 
     @Transactional
     public BooleanResponseDto verifyMail(String token) {
@@ -211,13 +189,12 @@ public class LoginService extends GenericService<User, UserDto>{
             response.setMessage("Token invalide.");
         }
         else {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            if(encoder.matches(passwordDto.getPassword(), user.getPassword())){
-                response.setStatus(false);
-                response.setMessage("Le nouveau mot de passe doit être différent de l'ancien.");
+            BooleanResponseDto comparePasswordResponse = securityService.comparePassword(passwordDto.getPassword(), user.getPassword(), "Le nouveau mot de passe doit être différent de l'ancien.");
+            if(!comparePasswordResponse.isStatus()){
+                return comparePasswordResponse;
             }
             else{
-                user.setPassword(encoder.encode(passwordDto.getPassword()));
+                user.setPassword(this.securityService.encodePassword(passwordDto.getPassword()));
                 user.setResetPasswordToken(null);
                 userRepository.save(user);
                 response.setStatus(true);

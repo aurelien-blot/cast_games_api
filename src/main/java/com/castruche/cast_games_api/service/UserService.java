@@ -7,16 +7,12 @@ import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.dto.util.ConnectedUserDto;
 import com.castruche.cast_games_api.dto.util.MailUpdateDto;
 import com.castruche.cast_games_api.dto.util.PasswordDto;
-import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,8 +28,12 @@ public class UserService extends GenericService<User, UserDto>{
     private ConnectedUserService connectedUserService;
     private PlayerService playerService;
     private MailService mailService;
+    private SecurityService securityService;
 
-    public UserService(UserRepository userRepository, UserFormatter userFormatter,JwtUtil jwtTokenUtil, MailService mailService,
+    public UserService(UserRepository userRepository, UserFormatter userFormatter,
+                       JwtUtil jwtTokenUtil,
+                    SecurityService securityService,
+                       MailService mailService,
                        PlayerService playerService, ConnectedUserService connectedUserService) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
@@ -41,6 +41,7 @@ public class UserService extends GenericService<User, UserDto>{
         this.jwtTokenUtil = jwtTokenUtil;
         this.connectedUserService = connectedUserService;
         this.playerService=playerService;
+        this.securityService = securityService;
         this.mailService = mailService;
     }
 
@@ -59,10 +60,10 @@ public class UserService extends GenericService<User, UserDto>{
             booleanResponseDto.setMessage("L'utilisateur connecté n'est pas reconnu");
             return booleanResponseDto;
         }
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        if (!bCryptPasswordEncoder.matches(passwordDto.getPassword(), user.getPassword())) {
+        BooleanResponseDto checkPasswordResponse = securityService.checkPassword(passwordDto.getPassword(), user);
+        if (!checkPasswordResponse.isStatus()) {
             booleanResponseDto.setStatus(false);
-            booleanResponseDto.setMessage("Le mot de passe ne correspond pas.");
+            booleanResponseDto.setMessage(checkPasswordResponse.getMessage());
             return booleanResponseDto;
         }
         this.deleteUser(user);
@@ -86,11 +87,9 @@ public class UserService extends GenericService<User, UserDto>{
             booleanResponseDto.setMessage("L'utilisateur connecté n'est pas reconnu");
             return booleanResponseDto;
         }
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
-            booleanResponseDto.setStatus(false);
-            booleanResponseDto.setMessage("Le mot de passe ne correspond pas.");
-            return booleanResponseDto;
+        BooleanResponseDto checkPasswordResponse = securityService.checkPassword(request.getPassword(), user);
+        if (!checkPasswordResponse.isStatus()) {
+            return checkPasswordResponse;
         }
         if(request.getNewMail()==null){
             booleanResponseDto.setStatus(false);
