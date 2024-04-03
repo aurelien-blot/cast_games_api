@@ -114,6 +114,12 @@ public class LoginService extends GenericService<User, UserDto>{
             response.setMessage("Utilisateur non trouvé.");
             return response;
         }
+        else if(user.isBlocked()){
+            response.setSuccess(false);
+            response.setMessage("Votre compte a été bloqué suite à un trop grand nombre de tentatives de connexion.\nUn mail vous a été envoyé pour réinitialiser votre mot de passe." +
+                    "\nVous pouvez aussi cliquer sur \"Mot de passe oublié\" pour en recevoir un nouveau.");
+            return response;
+        }
         BooleanResponseDto checkPasswordResponse = securityService.checkPassword(userDto.getPassword(), user);
         if(checkPasswordResponse.isStatus()){
             response.setSuccess(true);
@@ -196,6 +202,8 @@ public class LoginService extends GenericService<User, UserDto>{
             else{
                 user.setPassword(this.securityService.encodePassword(passwordDto.getPassword()));
                 user.setResetPasswordToken(null);
+                user.setTentatives(0);
+                user.setBlocked(false);
                 userRepository.save(user);
                 response.setStatus(true);
                 response.setMessage("Mot de passe réinitialisé.");

@@ -1,5 +1,6 @@
 package com.castruche.cast_games_api.service;
 
+import com.castruche.cast_games_api.configuration.JwtUtil;
 import com.castruche.cast_games_api.dao.UserRepository;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.dto.user.UserDto;
@@ -21,13 +22,19 @@ public class SecurityService {
     private UserRepository userRepository;
 
     private UserFormatter userFormatter;
+
+    private JwtUtil jwtTokenUtil;
     private static final Logger logger = LogManager.getLogger(SecurityService.class);
 
-    public SecurityService(SettingService settingService, UserRepository userRepository, MailService mailService, UserFormatter userFormatter) {
+    public SecurityService(SettingService settingService,
+                           JwtUtil jwtTokenUtil,
+                           UserRepository userRepository, MailService mailService,
+                           UserFormatter userFormatter) {
         this.settingService = settingService;
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.userFormatter = userFormatter;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @Transactional
@@ -54,9 +61,13 @@ public class SecurityService {
         if(user.getTentatives()>=tentativesMax){
             user.setBlocked(true);
             UserDto userDto = userFormatter.entityToDto(user);
-            this.mailService.sendMailForPasswordReset(userDto, user.getResetPasswordToken());
+            if(user.getTentatives()==tentativesMax){
+                user.setResetPasswordToken(jwtTokenUtil.generateToken(user.getUsername()));
+                this.mailService.sendMailForPasswordReset(userDto, user.getResetPasswordToken());
+            }
             result.setStatus(false);
-            result.setMessage("Votre compte a été bloqué suite à un trop grand nombre de tentatives de connexion. Un mail vous a été envoyé pour réinitialiser votre mot de passe.");
+            result.setMessage("Votre compte a été bloqué suite à un trop grand nombre de tentatives de connexion.\nUn mail vous a été envoyé pour réinitialiser votre mot de passe." +
+                    "\nVous pouvez aussi cliquer sur \"Mot de passe oublié\" pour en recevoir un nouveau.");
         }
         else{
             result.setStatus(false);
