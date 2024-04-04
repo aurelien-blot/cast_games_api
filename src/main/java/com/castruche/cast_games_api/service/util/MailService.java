@@ -50,6 +50,12 @@ public class MailService{
         this.sendMail(mailObjectDto);
     }
 
+    public void sendMailForAccountDeletion(UserDto user){
+        MailObjectDto mailObjectDto = initNoReplyMailObject(user);
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailAccountDeletionId()));
+        this.sendMail(mailObjectDto);
+    }
+
     private MailObjectDto initNoReplyMailObject(UserDto user){
         MailObjectDto mailObjectDto = new MailObjectDto();
         mailObjectDto.setSenderEmail(settingService.getNoReplyEmail());

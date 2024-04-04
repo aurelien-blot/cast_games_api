@@ -64,9 +64,12 @@ public class UserService extends GenericService<User, UserDto>{
         if (!checkPasswordResponse.isStatus()) {
             booleanResponseDto.setStatus(false);
             booleanResponseDto.setMessage(checkPasswordResponse.getMessage());
+            booleanResponseDto.setCode(checkPasswordResponse.getCode());
             return booleanResponseDto;
         }
+        UserDto userDto = this.userFormatter.entityToDto(user);
         this.deleteUser(user);
+        this.mailService.sendMailForAccountDeletion(userDto);
         booleanResponseDto.setStatus(true);
         booleanResponseDto.setMessage("Le compte a bien été supprimé, vous allez être redirigé vers la page d'accueil.");
         return booleanResponseDto;
