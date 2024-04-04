@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityService {
 
+    private static final Logger logger = LogManager.getLogger(SecurityService.class);
     private SettingService settingService;
     private MailService mailService;
     private UserRepository userRepository;
@@ -25,7 +26,6 @@ public class SecurityService {
     private UserFormatter userFormatter;
 
     private JwtUtil jwtTokenUtil;
-    private static final Logger logger = LogManager.getLogger(SecurityService.class);
 
     public SecurityService(SettingService settingService,
                            JwtUtil jwtTokenUtil,

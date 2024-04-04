@@ -15,6 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class UserService extends GenericService<User, UserDto>{
 
@@ -113,6 +117,7 @@ public class UserService extends GenericService<User, UserDto>{
         user.setEmail(request.getNewMail());
         user.setMailVerified(false);
         user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
+        user.setLastVerificationMailDate(LocalDateTime.now());
         this.userRepository.save(user);
         UserDto userDtoSaved = this.userFormatter.entityToDto(user);
         this.mailService.sendMailForMailVerification(userDtoSaved, user.getMailVerificationToken());
@@ -124,5 +129,33 @@ public class UserService extends GenericService<User, UserDto>{
     private void deleteUser(User user) {
         this.playerService.detachPlayerFromUser(user.getPlayer());
         this.userRepository.delete(user);
+    }
+
+    private void sendVerificationReminderMailList(){
+        List<User> unverifiedList = this.userRepository.findByMailVerifiedIsFalseAndLastVerificationMailDateIsNotNullAndLastVerificationMailDateBefore(LocalDate.now().atStartOfDay());
+        int count=0;
+        //On envoie un mail de rappel si le mail de vérification n'a pas été coché depuis 10, 20 et 27 jours après l'inscription
+        for(User user : unverifiedList){
+            //On exprime en jours le délai entre la date de création du compte et la date de dernier envoi de mail de vérification
+            long daysBetween = user.getCreationTime().until(user.getLastVerificationMailDate(), java.time.temporal.ChronoUnit.DAYS);
+            if(daysBetween==10 || daysBetween==20 || daysBetween==27){
+                user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
+                UserDto userDto = this.userFormatter.entityToDto(user);
+                //TODO this.mailService.sendMailForVerificationReminder(userDto, user.getMailVerificationToken(), daysBetween);
+                user.setLastVerificationMailDate(LocalDateTime.now());
+                this.userRepository.save(user);
+                count++;
+            }
+        }
+        logger.info("Nombre de mails de rappel de vérification envoyés : "+count);
+    }
+    private void deleteUnverifiedAccounts(){
+
+    }
+
+    @Transactional
+    public void manageAccountVerification() {
+        sendVerificationReminderMailList();
+        deleteUnverifiedAccounts();
     }
 }

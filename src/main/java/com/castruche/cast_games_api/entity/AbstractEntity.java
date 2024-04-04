@@ -2,7 +2,7 @@ package com.castruche.cast_games_api.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 public abstract class AbstractEntity {
@@ -12,9 +12,9 @@ public abstract class AbstractEntity {
     private Long id;
 
     @Column(nullable = false, updatable = false)
-    private Date creationTime;
+    private LocalDateTime creationTime;
 
-    private Date modificationTime;
+    private LocalDateTime modificationTime;
 
     public Long getId() {
         return id;
@@ -24,29 +24,29 @@ public abstract class AbstractEntity {
         this.id = id;
     }
 
-    public Date getCreationTime() {
+    public LocalDateTime getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(Date creationTime) {
+    public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
     }
 
-    public Date getModificationTime() {
+    public LocalDateTime getModificationTime() {
         return modificationTime;
     }
 
-    public void setModificationTime(Date modificationTime) {
+    public void setModificationTime(LocalDateTime modificationTime) {
         this.modificationTime = modificationTime;
     }
 
     @PrePersist
     protected void onCreate() {
-        this.creationTime = new Date();
+        this.creationTime = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.modificationTime = new Date();
+        this.modificationTime = LocalDateTime.now();
     }
 }

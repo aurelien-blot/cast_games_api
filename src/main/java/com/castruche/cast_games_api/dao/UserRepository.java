@@ -4,6 +4,10 @@ import com.castruche.cast_games_api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -14,5 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String mail);
     User findByMailVerificationToken(String token);
     User findByResetPasswordToken(String token);
+
+    List<User>  findByMailVerifiedIsFalseAndLastVerificationMailDateIsNotNullAndLastVerificationMailDateBefore(LocalDateTime lastVerificationMailDate);
 
 }

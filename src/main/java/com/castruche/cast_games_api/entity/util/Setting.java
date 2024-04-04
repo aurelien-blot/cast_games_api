@@ -3,7 +3,7 @@ package com.castruche.cast_games_api.entity.util;
 import com.castruche.cast_games_api.entity.AbstractEntity;
 import jakarta.persistence.Entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Setting extends AbstractEntity {
@@ -14,7 +14,7 @@ public class Setting extends AbstractEntity {
 
     private String value;
 
-    private Date dateValue;
+    private LocalDateTime dateValue;
 
     private String description;
 
@@ -42,11 +42,11 @@ public class Setting extends AbstractEntity {
         this.value = value;
     }
 
-    public Date getDateValue() {
+    public LocalDateTime getDateValue() {
         return dateValue;
     }
 
-    public void setDateValue(Date dateValue) {
+    public void setDateValue(LocalDateTime dateValue) {
         this.dateValue = dateValue;
     }
 

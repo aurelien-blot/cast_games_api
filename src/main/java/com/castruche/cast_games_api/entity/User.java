@@ -2,7 +2,8 @@ package com.castruche.cast_games_api.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Entity
 public class User extends AbstractEntity{
@@ -23,6 +24,7 @@ public class User extends AbstractEntity{
 
     private int tentatives;
 
+    private LocalDateTime lastVerificationMailDate;
     public String getUsername() {
         return username;
     }
@@ -109,5 +111,13 @@ public class User extends AbstractEntity{
 
     public void setTentatives(int tentatives) {
         this.tentatives = tentatives;
+    }
+
+    public LocalDateTime getLastVerificationMailDate() {
+        return lastVerificationMailDate;
+    }
+
+    public void setLastVerificationMailDate(LocalDateTime lastVerificationMailDate) {
+        this.lastVerificationMailDate = lastVerificationMailDate;
     }
 }

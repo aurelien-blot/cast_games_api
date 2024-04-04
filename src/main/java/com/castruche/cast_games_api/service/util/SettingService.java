@@ -51,6 +51,9 @@ public class SettingService {
     public String getMailVerificationId() {
         return getSettingValueByShortName("mailjet_verify_mail_id");
     }
+    public String getMailVerificationReminderId() {
+        return getSettingValueByShortName("mailjet_verify_mail_reminder_id");
+    }
     public String getMailRegistrationId() {
         return getSettingValueByShortName("mailjet_registration_id");
     }

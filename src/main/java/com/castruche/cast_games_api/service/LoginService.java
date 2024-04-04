@@ -23,6 +23,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class LoginService extends GenericService<User, UserDto>{
 
@@ -86,10 +88,12 @@ public class LoginService extends GenericService<User, UserDto>{
         this.userRepository.save(user);
         Player newPlayer = playerService.initPlayer(user);
         user.setPlayer(newPlayer);
-        this.userRepository.save(user);
+        user.setLastVerificationMailDate(LocalDateTime.now());
         UserDto userDtoSaved = selectDtoById(user.getId());
         this.mailService.sendMailForRegistration(userDtoSaved);
         this.mailService.sendMailForMailVerification(userDtoSaved, user.getMailVerificationToken());
+        this.userRepository.save(user);
+
         return userDtoSaved;
     }
 
@@ -145,6 +149,7 @@ public class LoginService extends GenericService<User, UserDto>{
             response.setMessage("Token invalide.");
         } else {
             user.setMailVerificationToken(null);
+            user.setLastVerificationMailDate(null);
             user.setMailVerified(true);
             userRepository.save(user);
             response.setStatus(true);

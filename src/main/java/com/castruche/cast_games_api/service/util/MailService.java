@@ -23,6 +23,7 @@ public class MailService{
     private static final String VAR_USERNAME = "username";
     private static final String VAR_CONFIRMATION_LINK = "confirmation_link";
     private static final String VAR_RESET_PASSWORD_LINK = "reset_password_link";
+    private static final String DAYS_SINCE_ACCOUNT_CREATION = "days_since_account_creation";
     private final SettingService settingService;
 
     public MailService(SettingService settingService) {
@@ -33,6 +34,13 @@ public class MailService{
         MailObjectDto mailObjectDto = initNoReplyMailObject(user);
         mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationId()));
         mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
+        this.sendMail(mailObjectDto);
+    }
+
+    public void sendMailForVerificationReminder(UserDto user, String verificationToken, long daysBetween){
+        MailObjectDto mailObjectDto = initNoReplyMailObject(user);
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationReminderId()));
+        // TODO mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
         this.sendMail(mailObjectDto);
     }
 
