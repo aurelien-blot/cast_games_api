@@ -5,6 +5,7 @@ import com.castruche.cast_games_api.dao.UserRepository;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.entity.User;
+import com.castruche.cast_games_api.enums.ResponseCodeEnum;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
 import com.castruche.cast_games_api.service.util.SettingService;
@@ -66,6 +67,7 @@ public class SecurityService {
                 this.mailService.sendMailForPasswordReset(userDto, user.getResetPasswordToken());
             }
             result.setStatus(false);
+            result.setCode(ResponseCodeEnum.FORBIDDEN.getCode());
             result.setMessage("Votre compte a été bloqué suite à un trop grand nombre de tentatives de connexion.\nUn mail vous a été envoyé pour réinitialiser votre mot de passe." +
                     "\nVous pouvez aussi cliquer sur \"Mot de passe oublié\" pour en recevoir un nouveau.");
         }
