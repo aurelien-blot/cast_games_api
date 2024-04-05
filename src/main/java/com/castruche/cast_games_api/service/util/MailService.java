@@ -2,6 +2,7 @@ package com.castruche.cast_games_api.service.util;
 
 import com.castruche.cast_games_api.dto.util.MailObjectDto;
 import com.castruche.cast_games_api.dto.user.UserDto;
+import com.castruche.cast_games_api.entity.util.Setting;
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
@@ -24,6 +25,7 @@ public class MailService{
     private static final String VAR_CONFIRMATION_LINK = "confirmation_link";
     private static final String VAR_RESET_PASSWORD_LINK = "reset_password_link";
     private static final String DAYS_SINCE_ACCOUNT_CREATION = "days_since_account_creation";
+    private static final String DAYS_BEFORE_DELETION = "days_before_deletion";
     private final SettingService settingService;
 
     public MailService(SettingService settingService) {
@@ -31,16 +33,21 @@ public class MailService{
     }
 
     public void sendMailForMailVerification(UserDto user, String verificationToken){
+        Integer delayMax = settingService.getDeletingUnverifiedAccountDelay();
         MailObjectDto mailObjectDto = initNoReplyMailObject(user);
         mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationId()));
         mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
+        mailObjectDto.getVariables().put(DAYS_BEFORE_DELETION, delayMax);
         this.sendMail(mailObjectDto);
     }
 
     public void sendMailForVerificationReminder(UserDto user, String verificationToken, long daysBetween){
+        Integer delayMax = settingService.getDeletingUnverifiedAccountDelay();
         MailObjectDto mailObjectDto = initNoReplyMailObject(user);
         mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailVerificationReminderId()));
-        // TODO mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
+        mailObjectDto.getVariables().put(VAR_CONFIRMATION_LINK, mailObjectDto.getVariables().get(VAR_APP_LINK)+"/confirm-mail?token=" + verificationToken);
+        mailObjectDto.getVariables().put(DAYS_SINCE_ACCOUNT_CREATION, daysBetween);
+        mailObjectDto.getVariables().put(DAYS_BEFORE_DELETION, delayMax);
         this.sendMail(mailObjectDto);
     }
 

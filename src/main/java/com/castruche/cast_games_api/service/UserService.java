@@ -10,6 +10,7 @@ import com.castruche.cast_games_api.dto.util.PasswordDto;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
+import com.castruche.cast_games_api.service.util.SettingService;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,11 +34,13 @@ public class UserService extends GenericService<User, UserDto>{
     private PlayerService playerService;
     private MailService mailService;
     private SecurityService securityService;
+    private SettingService settingService;
 
     public UserService(UserRepository userRepository, UserFormatter userFormatter,
                        JwtUtil jwtTokenUtil,
                     SecurityService securityService,
                        MailService mailService,
+                          SettingService settingsService,
                        PlayerService playerService, ConnectedUserService connectedUserService) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
@@ -47,6 +50,7 @@ public class UserService extends GenericService<User, UserDto>{
         this.playerService=playerService;
         this.securityService = securityService;
         this.mailService = mailService;
+        this.settingService = settingsService;
     }
 
     @Transactional
@@ -71,11 +75,10 @@ public class UserService extends GenericService<User, UserDto>{
             booleanResponseDto.setCode(checkPasswordResponse.getCode());
             return booleanResponseDto;
         }
-        UserDto userDto = this.userFormatter.entityToDto(user);
-        this.deleteUser(user);
-        this.mailService.sendMailForAccountDeletion(userDto);
+
         booleanResponseDto.setStatus(true);
         booleanResponseDto.setMessage("Le compte a bien été supprimé, vous allez être redirigé vers la page d'accueil.");
+        this.deleteUser(user);
         return booleanResponseDto;
     }
 
@@ -127,8 +130,10 @@ public class UserService extends GenericService<User, UserDto>{
     }
 
     private void deleteUser(User user) {
+        UserDto userDto = this.userFormatter.entityToDto(user);
         this.playerService.detachPlayerFromUser(user.getPlayer());
         this.userRepository.delete(user);
+        this.mailService.sendMailForAccountDeletion(userDto);
     }
 
     private void sendVerificationReminderMailList(){
@@ -138,19 +143,29 @@ public class UserService extends GenericService<User, UserDto>{
         for(User user : unverifiedList){
             //On exprime en jours le délai entre la date de création du compte et la date de dernier envoi de mail de vérification
             long daysBetween = user.getCreationTime().until(user.getLastVerificationMailDate(), java.time.temporal.ChronoUnit.DAYS);
-            if(daysBetween==10 || daysBetween==20 || daysBetween==27){
-                user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
-                UserDto userDto = this.userFormatter.entityToDto(user);
-                //TODO this.mailService.sendMailForVerificationReminder(userDto, user.getMailVerificationToken(), daysBetween);
-                user.setLastVerificationMailDate(LocalDateTime.now());
-                this.userRepository.save(user);
-                count++;
+            List<Integer> daysToCheck = settingService.getMailVerificationDelayList();
+            for(Integer i : daysToCheck){
+                if(daysBetween==i){
+                    user.setMailVerificationToken(jwtTokenUtil.generateToken(user.getEmail()));
+                    UserDto userDto = this.userFormatter.entityToDto(user);
+                    this.mailService.sendMailForVerificationReminder(userDto, user.getMailVerificationToken(), daysBetween);
+                    user.setLastVerificationMailDate(LocalDateTime.now());
+                    this.userRepository.save(user);
+                    count++;
+                }
             }
         }
         logger.info("Nombre de mails de rappel de vérification envoyés : "+count);
     }
     private void deleteUnverifiedAccounts(){
-
+        Integer delay = settingService.getDeletingUnverifiedAccountDelay();
+        List<User> unverifiedList = this.userRepository.findByMailVerifiedIsFalseAndCreationTimeBefore(LocalDateTime.now().minusDays(delay));
+        int count=0;
+        for(User user : unverifiedList){
+           this.deleteUser(user);
+            count++;
+        }
+        logger.info("Nombre de comptes non vérifiés supprimés : "+count);
     }
 
     @Transactional

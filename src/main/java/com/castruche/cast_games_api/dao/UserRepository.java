@@ -20,5 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByResetPasswordToken(String token);
 
     List<User>  findByMailVerifiedIsFalseAndLastVerificationMailDateIsNotNullAndLastVerificationMailDateBefore(LocalDateTime lastVerificationMailDate);
+    List<User>  findByMailVerifiedIsFalseAndCreationTimeBefore(LocalDateTime creationTime);
 
 }

@@ -6,6 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class SettingService {
 
@@ -47,12 +50,39 @@ public class SettingService {
     public String getFrontBaseUrl() {
         return getSettingValueByShortName("front_base_url");
     }
+    public List<Integer> getMailVerificationDelayList() {
+        try {
+            String setting = getSettingValueByShortName("mail_verification_reminder_delay_list");
+            List<Integer> result = null;
+            if (setting != null) {
+                result = new ArrayList<>();
+                String[] split = setting.split(";");
+                for (String s : split) {
+                    result.add(Integer.parseInt(s));
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            logger.error("Erreur de récupération du paramètre des délais de relance des vérifications de mail", e);
+        }
+        return null;
+    }
+
+    public Integer getDeletingUnverifiedAccountDelay() {
+        String result = getSettingValueByShortName("deleting_unverified_account_delay");
+        try {
+            return Integer.parseInt(result);
+        } catch (NumberFormatException e) {
+            logger.error("Error while parsing deleting_unverified_account_delay setting", e);
+        }
+        return null;
+    }
 
     public String getMailVerificationId() {
         return getSettingValueByShortName("mailjet_verify_mail_id");
     }
     public String getMailVerificationReminderId() {
-        return getSettingValueByShortName("mailjet_verify_mail_reminder_id");
+        return getSettingValueByShortName("mailjet_account_remind_verification_id");
     }
     public String getMailRegistrationId() {
         return getSettingValueByShortName("mailjet_registration_id");
