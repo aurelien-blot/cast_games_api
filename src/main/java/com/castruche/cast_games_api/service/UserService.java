@@ -142,7 +142,7 @@ public class UserService extends GenericService<User, UserDto>{
         //On envoie un mail de rappel si le mail de vérification n'a pas été coché depuis 10, 20 et 27 jours après l'inscription
         for(User user : unverifiedList){
             //On exprime en jours le délai entre la date de création du compte et la date de dernier envoi de mail de vérification
-            long daysBetween = user.getCreationTime().until(user.getLastVerificationMailDate(), java.time.temporal.ChronoUnit.DAYS);
+            long daysBetween = user.getCreationTime().until(LocalDate.now().atStartOfDay(), java.time.temporal.ChronoUnit.DAYS);
             List<Integer> daysToCheck = settingService.getMailVerificationDelayList();
             for(Integer i : daysToCheck){
                 if(daysBetween==i){
