@@ -5,6 +5,7 @@ import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.dto.user.UserDto;
 import com.castruche.cast_games_api.dto.util.ConnectedUserDto;
 import com.castruche.cast_games_api.dto.util.PasswordDto;
+import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import jakarta.transaction.Transactional;
@@ -28,13 +29,22 @@ public class ConnectedUserService {
     }
 
     public ConnectedUserDto getCurrentUser() {
+        User user = this.getCurrentUserEntity();
+        return this.userFormatter.entityToConnectedUserDto(user);
+    }
+
+    public Player getCurrentPlayer() {
+        User user = this.getCurrentUserEntity();
+        return user.getPlayer();
+    }
+
+    private User getCurrentUserEntity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
         String username=authentication.getName();
-        User user = this.userRepository.findByUsername(username);
-        return this.userFormatter.entityToConnectedUserDto(user);
+        return this.userRepository.findByUsername(username);
     }
 
     public boolean isCurrentUserByPlayerId(long playerId){

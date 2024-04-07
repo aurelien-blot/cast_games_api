@@ -1,14 +1,17 @@
 package com.castruche.cast_games_api.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Player extends AbstractEntity{
 
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.LAZY)
+    private List<Contact> contacts;
 
     private String username;
 
@@ -36,5 +39,13 @@ public class Player extends AbstractEntity{
 
     public void setArchived(boolean archived) {
         this.archived = archived;
+    }
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
     }
 }

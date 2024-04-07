@@ -1,11 +1,11 @@
 package com.castruche.cast_games_api.controller;
 
+import com.castruche.cast_games_api.dto.ContactDto;
 import com.castruche.cast_games_api.dto.player.*;
 import com.castruche.cast_games_api.service.PlayerService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.castruche.cast_games_api.controller.ConstantUrl.PLAYER;
 
@@ -41,5 +41,11 @@ public class PlayerController {
     @GetMapping("/settings/{id}")
     public PlayerSettingsDto getSettings(@PathVariable("id") Long id) {
         return playerService.getSettings(id);
+    }
+
+    //Supprimer si non utilisé
+    @PostMapping("/search/{username}")
+    public List<PlayerExtraLightDto> searchPlayer(@PathVariable("username") String username) {
+        return playerService.searchPlayer(username);
     }
 }

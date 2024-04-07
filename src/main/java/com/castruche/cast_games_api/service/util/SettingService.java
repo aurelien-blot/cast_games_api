@@ -90,6 +90,9 @@ public class SettingService {
     public String getMailAccountDeletionId() {
         return getSettingValueByShortName("mailjet_account_deletion_id");
     }
+    public String getMailRequestContactId() {
+        return getSettingValueByShortName("mailjet_request_contact_id");
+    }
     public String getMailResetPasswordId() {
         return getSettingValueByShortName("mailjet_reset_password_id");
     }

@@ -26,6 +26,7 @@ public class MailService{
     private static final String VAR_RESET_PASSWORD_LINK = "reset_password_link";
     private static final String DAYS_SINCE_ACCOUNT_CREATION = "days_since_account_creation";
     private static final String DAYS_BEFORE_DELETION = "days_before_deletion";
+    private static final String CONTACT_REQUESTER_USERNAME = "contact_requester_username";
     private final SettingService settingService;
 
     public MailService(SettingService settingService) {
@@ -68,6 +69,13 @@ public class MailService{
     public void sendMailForAccountDeletion(UserDto user){
         MailObjectDto mailObjectDto = initNoReplyMailObject(user);
         mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailAccountDeletionId()));
+        this.sendMail(mailObjectDto);
+    }
+
+    public void sendContactRequestMail(UserDto user, String requesterUsername){
+        MailObjectDto mailObjectDto = initNoReplyMailObject(user);
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailRequestContactId()));
+        mailObjectDto.getVariables().put(CONTACT_REQUESTER_USERNAME, requesterUsername);
         this.sendMail(mailObjectDto);
     }
 
