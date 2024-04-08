@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Long> {
 
-    List<Contact> findByContactIdAndActiveIsFalseAndBlockedIsFalse(Long contactId);
+    List<Contact> findByContactIdAndActiveIsFalseAndBlockedIsFalseAndRejectedIsFalse(Long contactId);
 }

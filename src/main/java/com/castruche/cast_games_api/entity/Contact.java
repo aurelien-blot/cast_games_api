@@ -16,6 +16,7 @@ public class Contact extends AbstractEntity{
     private Player contact;
 
     private boolean blocked;
+    private boolean rejected;
 
     private boolean active;
 
@@ -49,5 +50,13 @@ public class Contact extends AbstractEntity{
 
     public void setContact(Player contact) {
         this.contact = contact;
+    }
+
+    public boolean isRejected() {
+        return rejected;
+    }
+
+    public void setRejected(boolean rejected) {
+        this.rejected = rejected;
     }
 }

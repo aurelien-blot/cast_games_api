@@ -75,7 +75,7 @@ public class PlayerService extends GenericService<Player, PlayerDto>{
     }
 
     private List<ContactDto> getRequestListFromPlayer(Long playerId){
-        List<Contact> contactRequestList = this.contactRepository.findByContactIdAndActiveIsFalseAndBlockedIsFalse(playerId);
+        List<Contact> contactRequestList = this.contactRepository.findByContactIdAndActiveIsFalseAndBlockedIsFalseAndRejectedIsFalse(playerId);
         return contactFormatter.entityToDto(contactRequestList);
     }
 

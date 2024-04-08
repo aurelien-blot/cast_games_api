@@ -106,6 +106,7 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         newContact.setContact(contact);
         newContact.setActive(false);
         newContact.setBlocked(false);
+        newContact.setRejected(false);
         return newContact;
     }
 
