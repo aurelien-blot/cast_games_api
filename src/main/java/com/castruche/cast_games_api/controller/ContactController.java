@@ -30,4 +30,14 @@ public class ContactController {
     public List<PlayerExtraLightDto> searchPlayer(@PathVariable("username") String username) {
         return contactService.searchNewContact(username);
     }
+
+    @PostMapping("/accept/{requestId}")
+    public BooleanResponseDto acceptFriend(@PathVariable("requestId") Long requestId) {
+        return contactService.acceptFriend(requestId);
+    }
+
+    @PostMapping("/reject/{requestId}")
+    public BooleanResponseDto rejectFriend(@PathVariable("requestId") Long requestId) {
+        return contactService.rejectFriend(requestId);
+    }
 }

@@ -134,4 +134,80 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         return contacts;
     }
 
+    @Transactional
+    public BooleanResponseDto acceptFriend(Long requestId){
+        if(null==requestId){
+            throw new IllegalArgumentException("RequestId is null");
+        }
+        Contact contact = this.selectById(requestId);
+        BooleanResponseDto response = manageContactRequestError(contact);
+        if(response.isStatus()){
+            validateContact(contact);
+            response.setMessage("La demande de contact a été acceptée.");
+        }
+        return response;
+    }
+
+    @Transactional
+    public BooleanResponseDto rejectFriend(Long requestId){
+        if(null==requestId){
+            throw new IllegalArgumentException("RequestId is null");
+        }
+        Contact contact = this.selectById(requestId);
+        BooleanResponseDto response = manageContactRequestError(contact);
+        if(response.isStatus()){
+            contact.setRejected(true);
+            this.contactRepository.save(contact);
+            response.setMessage("La demande de contact a été refusée.");
+        }
+        return response;
+    }
+
+    private BooleanResponseDto manageContactRequestError(Contact contact){
+        BooleanResponseDto response = new BooleanResponseDto();
+        Player connectedPlayer = this.connectedUserService.getCurrentPlayer();
+        if(connectedPlayer == null){
+            response.setStatus(false);
+            response.setMessage("Le joueur n'est pas connecté.");
+        }
+        else if(contact == null){
+            response.setStatus(false);
+            response.setMessage("La demande de contact n'existe pas.");
+        }
+        else if(!contact.getContact().getId().equals(connectedPlayer.getId())){
+            response.setStatus(false);
+            response.setMessage("Vous n'êtes pas concerné par cette demande de contact.");
+        }
+        else if(contact.isActive()){
+            response.setStatus(false);
+            response.setMessage("La demande de contact a déjà été acceptée.");
+        }
+        else if(contact.isBlocked()){
+            response.setStatus(false);
+            response.setMessage("La demande de contact a été bloquée.");
+        }
+        else{
+            response.setStatus(true);
+        }
+        return response;
+    }
+
+    private void validateContact(Contact contact){
+        contact.setActive(true);
+        contact.setRejected(false);
+        contact.setBlocked(false);
+        this.contactRepository.save(contact);
+        createSymetryContact(contact);
+    }
+
+    private void createSymetryContact(Contact contact){
+        Contact symetryContact = new Contact();
+        symetryContact.setPlayer(contact.getContact());
+        symetryContact.setContact(contact.getPlayer());
+        symetryContact.setActive(true);
+        symetryContact.setBlocked(false);
+        symetryContact.setRejected(false);
+        this.contactRepository.save(symetryContact);
+    }
+
 }

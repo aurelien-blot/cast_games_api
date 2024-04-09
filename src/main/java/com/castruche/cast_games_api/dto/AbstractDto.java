@@ -3,12 +3,13 @@ package com.castruche.cast_games_api.dto;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public abstract class AbstractDto {
 
     private Long id;
-    private LocalDate creationTime;
-    private LocalDate modificationTime;
+    private LocalDateTime creationTime;
+    private LocalDateTime modificationTime;
 
     public Long getId() {
         return id;
@@ -18,19 +19,19 @@ public abstract class AbstractDto {
         this.id = id;
     }
 
-    public LocalDate getCreationTime() {
+    public LocalDateTime getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(LocalDate creationTime) {
+    public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
     }
 
-    public LocalDate getModificationTime() {
+    public LocalDateTime getModificationTime() {
         return modificationTime;
     }
 
-    public void setModificationTime(LocalDate modificationTime) {
+    public void setModificationTime(LocalDateTime modificationTime) {
         this.modificationTime = modificationTime;
     }
 }
