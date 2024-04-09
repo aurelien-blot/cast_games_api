@@ -78,6 +78,11 @@ public class MailService{
         mailObjectDto.getVariables().put(CONTACT_REQUESTER_USERNAME, requesterUsername);
         this.sendMail(mailObjectDto);
     }
+    public void sendContactInvitationMail(UserDto user, String email){
+        MailObjectDto mailObjectDto = initNoReplyMailByMailObject(user, email);
+        mailObjectDto.setTemplateId(Integer.parseInt(settingService.getMailRequestContactByMailId()));
+        this.sendMail(mailObjectDto);
+    }
 
     private MailObjectDto initNoReplyMailObject(UserDto user){
         MailObjectDto mailObjectDto = new MailObjectDto();
@@ -85,6 +90,19 @@ public class MailService{
         mailObjectDto.setSenderName(settingService.getNoReplyName());
         mailObjectDto.setReceiverEmail(user.getEmail());
         mailObjectDto.setReceiverName(user.getFirstName());
+        JSONObject variables = new JSONObject();
+        mailObjectDto.setVariables(variables);
+        String frontBaseUrl = settingService.getFrontBaseUrl();
+        mailObjectDto.getVariables().put(VAR_APP_LINK, frontBaseUrl);
+        mailObjectDto.getVariables().put(VAR_USERNAME, user.getUsername());
+        return mailObjectDto;
+    }
+
+    private MailObjectDto initNoReplyMailByMailObject(UserDto user, String email){
+        MailObjectDto mailObjectDto = new MailObjectDto();
+        mailObjectDto.setSenderEmail(settingService.getNoReplyEmail());
+        mailObjectDto.setSenderName(settingService.getNoReplyName());
+        mailObjectDto.setReceiverEmail(email);
         JSONObject variables = new JSONObject();
         mailObjectDto.setVariables(variables);
         String frontBaseUrl = settingService.getFrontBaseUrl();

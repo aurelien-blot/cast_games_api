@@ -53,6 +53,9 @@ public class UserService extends GenericService<User, UserDto>{
         this.settingService = settingsService;
     }
 
+    public User findByEmail(String mail){
+        return this.userRepository.findByEmail(mail);
+    }
     @Transactional
     public BooleanResponseDto deleteAccount(PasswordDto passwordDto) {
         BooleanResponseDto booleanResponseDto = new BooleanResponseDto();

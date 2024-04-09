@@ -17,6 +17,7 @@ import com.castruche.cast_games_api.formatter.ContactFormatter;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
 import com.castruche.cast_games_api.service.util.SettingService;
+import com.castruche.cast_games_api.service.util.TypeFormatService;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,12 +40,16 @@ public class ContactService extends GenericService<Contact, ContactDto>{
     private PlayerService playerService;
     private UserFormatter userFormatter;
     private MailService mailService;
+    private TypeFormatService typeFormatService;
+    private UserService userService;
 
     public ContactService(ContactRepository contactRepository,
                           ContactFormatter contactFormatter,
                           ConnectedUserService connectedUserService,
                           MailService mailService,
+                          UserService userService,
                           UserFormatter userFormatter,
+                          TypeFormatService typeFormatService,
                           PlayerService playerService
     ) {
         super(contactRepository, contactFormatter);
@@ -52,8 +57,10 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         this.contactFormatter = contactFormatter;
         this.connectedUserService = connectedUserService;
         this.playerService = playerService;
+        this.userService = userService;
         this.userFormatter = userFormatter;
         this.mailService = mailService;
+        this.typeFormatService = typeFormatService;
     }
 
     @Transactional
@@ -100,10 +107,47 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         return response;
     }
 
+
+    @Transactional
+    public BooleanResponseDto requestContactByMail(String mail) {
+        if (null == mail || !this.typeFormatService.isMail(mail)) {
+            throw new IllegalArgumentException("Mail is null or is not a mail");
+        }
+        BooleanResponseDto response = new BooleanResponseDto();
+        User connectedUser = this.connectedUserService.getCurrentUserEntity();
+        User contactUser = this.userService.findByEmail(mail);
+        if (connectedUser == null) {
+            response.setStatus(false);
+            response.setMessage("Le joueur n'est pas connecté.");
+        }
+        else if(contactUser !=null && contactUser.getPlayer()!= null){
+            return requestContact(contactUser.getPlayer().getId());
+        }
+        else{
+            UserDto userDto = this.userFormatter.entityToDto(connectedUser);
+            Contact contact = initContactByMail(connectedUser.getPlayer(), mail);
+            this.contactRepository.save(contact);
+            this.mailService.sendContactInvitationMail(userDto, mail);
+            response.setStatus(true);
+            response.setMessage("Une demande de contact a été envoyée à "+mail+".");
+        }
+        return response;
+    }
+
+
     private Contact initContact(Player player, Player contact){
         Contact newContact = new Contact();
         newContact.setPlayer(player);
         newContact.setContact(contact);
+        newContact.setActive(false);
+        newContact.setBlocked(false);
+        newContact.setRejected(false);
+        return newContact;
+    }
+    private Contact initContactByMail(Player player, String mail){
+        Contact newContact = new Contact();
+        newContact.setPlayer(player);
+        newContact.setContactMail(mail);
         newContact.setActive(false);
         newContact.setBlocked(false);
         newContact.setRejected(false);
@@ -143,7 +187,14 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         BooleanResponseDto response = manageContactRequestError(contact);
         if(response.isStatus()){
             validateContact(contact);
-            response.setMessage("La demande de contact a été acceptée.");
+            String message;
+            if(contact.getPlayer()!=null && contact.getPlayer().getUsername()!=null){
+                message = "La demande de contact de "+ contact.getPlayer().getUsername()+" a été acceptée.";
+            }
+            else{
+                message="La demande de contact a été acceptée.";
+            }
+            response.setMessage(message);
         }
         return response;
     }
@@ -158,7 +209,14 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         if(response.isStatus()){
             contact.setRejected(true);
             this.contactRepository.save(contact);
-            response.setMessage("La demande de contact a été refusée.");
+            String message;
+            if(contact.getPlayer()!=null && contact.getPlayer().getUsername()!=null){
+                message = "La demande de contact de "+ contact.getPlayer().getUsername()+" a été refusée.";
+            }
+            else{
+                message="La demande de contact a été refusée.";
+            }
+            response.setMessage(message);
         }
         return response;
     }
@@ -182,12 +240,62 @@ public class ContactService extends GenericService<Contact, ContactDto>{
             response.setStatus(false);
             response.setMessage("La demande de contact a déjà été acceptée.");
         }
-        else if(contact.isBlocked()){
+        else{
+            response.setStatus(true);
+        }
+        return response;
+    }
+
+    @Transactional
+    public BooleanResponseDto blockContact(Long id){
+        if(null==id){
+            throw new IllegalArgumentException("Id is null");
+        }
+        Contact contact = this.selectById(id);
+        BooleanResponseDto response = new BooleanResponseDto();
+        if(contact == null){
             response.setStatus(false);
-            response.setMessage("La demande de contact a été bloquée.");
+            response.setMessage("La demande de contact n'existe pas.");
         }
         else{
             response.setStatus(true);
+            contact.setBlocked(true);
+            this.contactRepository.save(contact);
+            String message;
+            if(contact.getContact()!=null && contact.getContact().getUsername()!=null){
+                message = contact.getContact().getUsername()+" a été bloqué.";
+            }
+            else{
+                message="Le joueur ou la joueuse a été bloqué.";
+            }
+            response.setMessage(message);
+        }
+        return response;
+    }
+
+    @Transactional
+    public BooleanResponseDto unblockContact(Long id){
+        if(null==id){
+            throw new IllegalArgumentException("Id is null");
+        }
+        Contact contact = this.selectById(id);
+        BooleanResponseDto response = new BooleanResponseDto();
+        if(contact == null){
+            response.setStatus(false);
+            response.setMessage("La demande de contact n'existe pas.");
+        }
+        else{
+            response.setStatus(true);
+            contact.setBlocked(false);
+            this.contactRepository.save(contact);
+            String message;
+            if(contact.getContact()!=null && contact.getContact().getUsername()!=null){
+                message = contact.getContact().getUsername()+" a été débloqué.";
+            }
+            else{
+                message="Le joueur ou la joueuse a été débloqué.";
+            }
+            response.setMessage(message);
         }
         return response;
     }
@@ -208,6 +316,50 @@ public class ContactService extends GenericService<Contact, ContactDto>{
         symetryContact.setBlocked(false);
         symetryContact.setRejected(false);
         this.contactRepository.save(symetryContact);
+    }
+
+    @Transactional
+    public BooleanResponseDto deleteContact(Long id){
+        if(null==id){
+            throw new IllegalArgumentException("Id is null");
+        }
+        Contact contact = this.selectById(id);
+        BooleanResponseDto response = new BooleanResponseDto();
+        if(contact == null){
+            response.setStatus(false);
+            response.setMessage("La demande de contact n'existe pas.");
+        }
+        else{
+            response.setStatus(true);
+            this.deleteSymetryContact(contact);
+            this.contactRepository.delete(contact);
+            String message;
+            if(contact.getContact()!=null && contact.getContact().getUsername()!=null){
+                message = contact.getContact().getUsername()+" ne fait plus partie de vos amis.";
+            }
+            else{
+                message="Le joueur ou la joueuse ne fait plus partie de vos amis.";
+            }
+            response.setMessage(message);
+        }
+        return response;
+    }
+
+    private void deleteSymetryContact(Contact contact){
+        Contact symetryContact = this.contactRepository.findByPlayerAndContact(contact.getContact(), contact.getPlayer());
+        if(symetryContact != null){
+            this.contactRepository.delete(symetryContact);
+        }
+    }
+
+    @Transactional
+    public void transformMailContactToUserContact(User user){
+        List<Contact> contactList = this.contactRepository.findByContactMail(user.getEmail());
+        for(Contact contact : contactList){
+            contact.setContactMail(null);
+            contact.setContact(user.getPlayer());
+            this.contactRepository.save(contact);
+        }
     }
 
 }

@@ -38,7 +38,7 @@ public class ConnectedUserService {
         return user.getPlayer();
     }
 
-    private User getCurrentUserEntity() {
+    public User getCurrentUserEntity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;

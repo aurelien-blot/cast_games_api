@@ -8,6 +8,7 @@ public class ContactDto {
     private String contactUsername;
     private Long contactId;
     private boolean active;
+    private boolean blocked;
 
     public Long getId() {
         return id;
@@ -55,5 +56,13 @@ public class ContactDto {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

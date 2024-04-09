@@ -20,6 +20,8 @@ public class Contact extends AbstractEntity{
 
     private boolean active;
 
+    private String contactMail;
+
     public Player getPlayer() {
         return player;
     }
@@ -58,5 +60,13 @@ public class Contact extends AbstractEntity{
 
     public void setRejected(boolean rejected) {
         this.rejected = rejected;
+    }
+
+    public String getContactMail() {
+        return contactMail;
+    }
+
+    public void setContactMail(String contactMail) {
+        this.contactMail = contactMail;
     }
 }

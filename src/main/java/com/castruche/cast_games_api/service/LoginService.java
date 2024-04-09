@@ -8,6 +8,7 @@ import com.castruche.cast_games_api.dto.login.LoginUserDto;
 import com.castruche.cast_games_api.dto.util.PasswordDto;
 import com.castruche.cast_games_api.dto.util.UserMailDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
+import com.castruche.cast_games_api.entity.Contact;
 import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.entity.util.Setting;
@@ -36,6 +37,7 @@ public class LoginService extends GenericService<User, UserDto>{
     private PlayerService playerService;
     private TypeFormatService typeFormatService;
     private SecurityService securityService;
+    private ContactService contactService;
 
     public LoginService(UserRepository userRepository,
                         UserFormatter userFormatter,
@@ -43,6 +45,7 @@ public class LoginService extends GenericService<User, UserDto>{
                         MailService mailService,
                         PlayerService playerService,
                         SecurityService securityService,
+                        ContactService contactService,
                         TypeFormatService typeFormatService) {
         super(userRepository, userFormatter);
         this.userRepository = userRepository;
@@ -51,6 +54,7 @@ public class LoginService extends GenericService<User, UserDto>{
         this.mailService = mailService;
         this.typeFormatService = typeFormatService;
         this.playerService = playerService;
+        this.contactService = contactService;
         this.securityService = securityService;
     }
 
@@ -93,7 +97,7 @@ public class LoginService extends GenericService<User, UserDto>{
         this.mailService.sendMailForRegistration(userDtoSaved);
         this.mailService.sendMailForMailVerification(userDtoSaved, user.getMailVerificationToken());
         this.userRepository.save(user);
-
+        this.contactService.transformMailContactToUserContact(user);
         return userDtoSaved;
     }
 

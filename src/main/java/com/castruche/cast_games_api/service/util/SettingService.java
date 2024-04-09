@@ -93,6 +93,9 @@ public class SettingService {
     public String getMailRequestContactId() {
         return getSettingValueByShortName("mailjet_request_contact_id");
     }
+    public String getMailRequestContactByMailId() {
+        return getSettingValueByShortName("mailjet_request_contact_by_mail_id");
+    }
     public String getMailResetPasswordId() {
         return getSettingValueByShortName("mailjet_reset_password_id");
     }

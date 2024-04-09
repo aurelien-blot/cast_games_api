@@ -26,6 +26,10 @@ public class ContactFormatter implements IFormatter<Contact, ContactDto>{
             contactDto.setContactId(entity.getContact().getId());
             contactDto.setContactUsername(entity.getContact().getUsername());
         }
+        else if(entity.getContactMail()!=null){
+            contactDto.setContactUsername(entity.getContactMail());
+        }
+        contactDto.setBlocked(entity.isBlocked());
         return contactDto;
     }
 

@@ -26,6 +26,11 @@ public class ContactController {
         return contactService.requestContact(playerId);
     }
 
+    @PostMapping("/request/mail/{playerMail}")
+    public BooleanResponseDto requestContactByMail(@PathVariable("playerMail") String playerMail) {
+        return contactService.requestContactByMail(playerMail);
+    }
+
     @PostMapping("/search/new/{username}")
     public List<PlayerExtraLightDto> searchPlayer(@PathVariable("username") String username) {
         return contactService.searchNewContact(username);
@@ -39,5 +44,20 @@ public class ContactController {
     @PostMapping("/reject/{requestId}")
     public BooleanResponseDto rejectFriend(@PathVariable("requestId") Long requestId) {
         return contactService.rejectFriend(requestId);
+    }
+
+    @PostMapping("/block/{id}")
+    public BooleanResponseDto blockContact(@PathVariable("id") Long id) {
+        return contactService.blockContact(id);
+    }
+
+    @PostMapping("/unblock/{id}")
+    public BooleanResponseDto unblockContact(@PathVariable("id") Long id) {
+        return contactService.unblockContact(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public BooleanResponseDto deleteContact(@PathVariable("id") Long id) {
+        return contactService.deleteContact(id);
     }
 }
