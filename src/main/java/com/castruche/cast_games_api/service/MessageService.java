@@ -21,8 +21,18 @@ public class MessageService {
 
     @Transactional
     public BooleanResponseDto sendMessage(MessageDto messageDto){
-        rabbitTemplate.convertAndSend(RabbitMqConfig.EXCHANGE_NAME, RabbitMqConfig.ROUTING_KEY, messageDto);
-        return null;
+        BooleanResponseDto response = new BooleanResponseDto();
+        try{
+            rabbitTemplate.convertAndSend(RabbitMqConfig.EXCHANGE_NAME, RabbitMqConfig.ROUTING_KEY, messageDto);
+            response.setStatus(true);
+            response.setMessage("Message envoyé");
+            return response;
+        } catch (Exception e){
+            logger.error("Error sending message: " + e.getMessage());
+            response.setStatus(false);
+            response.setMessage("Erreur lors de l'envoi du message");
+        }
+        return response;
     }
 
 
