@@ -1,4 +1,4 @@
-package com.castruche.cast_games_api.dto;
+package com.castruche.cast_games_api.dto.contact;
 
 public class ContactDto {
 

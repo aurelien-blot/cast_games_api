@@ -1,11 +1,8 @@
 package com.castruche.cast_games_api.formatter;
 
-import com.castruche.cast_games_api.dto.ContactDto;
+import com.castruche.cast_games_api.dto.contact.ContactDto;
 import com.castruche.cast_games_api.entity.Contact;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ContactFormatter implements IFormatter<Contact, ContactDto>{

@@ -14,39 +14,34 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MessageService {
+public class ConversationService {
 
-    private static final Logger logger = LogManager.getLogger(MessageService.class);
+    private static final Logger logger = LogManager.getLogger(ConversationService.class);
     private RabbitTemplate rabbitTemplate;
 
     private ConnectedUserService connectedUserService;
 
-    public MessageService(RabbitTemplate rabbitTemplate, ConnectedUserService connectedUserService){
+    public ConversationService(RabbitTemplate rabbitTemplate, ConnectedUserService connectedUserService){
         this.connectedUserService = connectedUserService;
         this.rabbitTemplate = rabbitTemplate;
     }
 
     @Transactional
-    public BooleanResponseDto sendMessage(MessageDto messageDto){
-        Player senderDto = connectedUserService.getCurrentPlayer();
-        if(senderDto == null){
-            throw new IllegalArgumentException("Sender not found");
+    public BooleanResponseDto initConversationList(){
+        ConnectedUserDto connectedUserDto = connectedUserService.getCurrentUser();
+        if(connectedUserDto == null){
+            throw new IllegalArgumentException("Connected user not found");
         }
-        PlayerExtraLightDto sender = new PlayerExtraLightDto();
-        sender.setId(senderDto.getId());
-        sender.setUsername(senderDto.getUsername());
-        messageDto.setSender(sender);
-
         BooleanResponseDto response = new BooleanResponseDto();
         try{
-            rabbitTemplate.convertAndSend(RabbitMqConfig.MESSAGE_EXCHANGE_NAME, RabbitMqConfig.MESSAGE_ROUTING_KEY, messageDto);
+            rabbitTemplate.convertAndSend(RabbitMqConfig.CONVERSATION_EXCHANGE_NAME, RabbitMqConfig.CONVERSATION_ROUTING_KEY, connectedUserDto.getPlayerId());
             response.setStatus(true);
-            response.setMessage("Demande de requête d'envoi de message envoyée");
+            response.setMessage("Liste des conversations demandée");
             return response;
         } catch (Exception e){
-            logger.error("Erreur lors de l'envoi de la requête : " + e.getMessage());
+            logger.error("Erreur lors de l'envoi de la requête: " + e.getMessage());
             response.setStatus(false);
-            response.setMessage("Erreur lors de l'envoi de la requête d'envoi de message");
+            response.setMessage("Erreur lors de l'envoi de la requête de liste des conversations");
         }
         return response;
     }

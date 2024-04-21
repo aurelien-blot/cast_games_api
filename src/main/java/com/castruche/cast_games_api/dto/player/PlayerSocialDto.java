@@ -1,6 +1,6 @@
 package com.castruche.cast_games_api.dto.player;
 
-import com.castruche.cast_games_api.dto.ContactDto;
+import com.castruche.cast_games_api.dto.contact.ContactDto;
 
 import java.util.List;
 

@@ -12,23 +12,40 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
-    public static final String QUEUE_NAME = "messageQueue";
-    public static final String EXCHANGE_NAME = "messageExchange";
-    public static final String ROUTING_KEY = "messageRoutingKey";
+    public static final String MESSAGE_QUEUE_NAME = "messageQueue";
+    public static final String MESSAGE_EXCHANGE_NAME = "messageExchange";
+    public static final String MESSAGE_ROUTING_KEY = "messageRoutingKey";
+    public static final String CONVERSATION_QUEUE_NAME = "conversationQueue";
+    public static final String CONVERSATION_EXCHANGE_NAME = "conversationExchange";
+    public static final String CONVERSATION_ROUTING_KEY = "conversationRoutingKey";
 
     @Bean
-    Queue queue() {
-        return new Queue(QUEUE_NAME, true);
+    Queue messageQueue() {
+        return new Queue(MESSAGE_QUEUE_NAME, true);
     }
 
     @Bean
-    DirectExchange exchange() {
-        return new DirectExchange(EXCHANGE_NAME);
+    Queue conversationQueue() {
+        return new Queue(CONVERSATION_QUEUE_NAME, true);
     }
 
     @Bean
-    Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
+    DirectExchange messageExchange() {
+        return new DirectExchange(MESSAGE_EXCHANGE_NAME);
+    }
+
+    @Bean
+    DirectExchange conversationExchange() {
+        return new DirectExchange(CONVERSATION_EXCHANGE_NAME);
+    }
+    @Bean
+    Binding messageBinding(Queue messageQueue, DirectExchange messageExchange) {
+        return BindingBuilder.bind(messageQueue).to(messageExchange).with(MESSAGE_ROUTING_KEY);
+    }
+
+    @Bean
+    Binding conversationBinding(Queue conversationQueue, DirectExchange conversationExchange) {
+        return BindingBuilder.bind(conversationQueue).to(conversationExchange).with(CONVERSATION_ROUTING_KEY);
     }
 
     @Bean

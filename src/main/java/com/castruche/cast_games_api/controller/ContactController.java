@@ -1,16 +1,13 @@
 package com.castruche.cast_games_api.controller;
 
-import com.castruche.cast_games_api.dto.ContactDto;
 import com.castruche.cast_games_api.dto.player.*;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.service.ContactService;
-import com.castruche.cast_games_api.service.PlayerService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static com.castruche.cast_games_api.controller.ConstantUrl.CONTACT;
-import static com.castruche.cast_games_api.controller.ConstantUrl.PLAYER;
 
 @RestController
 @RequestMapping(CONTACT)
@@ -20,6 +17,12 @@ public class ContactController {
     public ContactController(ContactService contactService) {
         this.contactService = contactService;
     }
+
+    @GetMapping("/active")
+    public List<PlayerExtraLightDto> getActiveContacts() {
+        return contactService.getActiveContacts();
+    }
+
 
     @PostMapping("/request/{playerId}")
     public BooleanResponseDto requestContact(@PathVariable("playerId") Long playerId) {

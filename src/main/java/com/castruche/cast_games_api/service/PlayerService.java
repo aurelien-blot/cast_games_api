@@ -2,7 +2,7 @@ package com.castruche.cast_games_api.service;
 
 import com.castruche.cast_games_api.dao.ContactRepository;
 import com.castruche.cast_games_api.dao.PlayerRepository;
-import com.castruche.cast_games_api.dto.ContactDto;
+import com.castruche.cast_games_api.dto.contact.ContactDto;
 import com.castruche.cast_games_api.dto.player.*;
 import com.castruche.cast_games_api.entity.Contact;
 import com.castruche.cast_games_api.entity.Player;
@@ -12,10 +12,8 @@ import com.castruche.cast_games_api.formatter.PlayerFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

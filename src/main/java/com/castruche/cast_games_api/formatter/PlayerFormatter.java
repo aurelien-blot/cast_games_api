@@ -1,6 +1,6 @@
 package com.castruche.cast_games_api.formatter;
 
-import com.castruche.cast_games_api.dto.ContactDto;
+import com.castruche.cast_games_api.dto.contact.ContactDto;
 import com.castruche.cast_games_api.dto.player.*;
 import com.castruche.cast_games_api.entity.Player;
 import org.springframework.stereotype.Service;

@@ -10,4 +10,5 @@ public class ConstantUrl {
     public static final String PLAYER = ROOT + "/player";
     public static final String CONTACT = ROOT + "/contact";
     public static final String MESSAGE = ROOT + "/message";
+    public static final String CONVERSATION = ROOT + "/conversation";
 }

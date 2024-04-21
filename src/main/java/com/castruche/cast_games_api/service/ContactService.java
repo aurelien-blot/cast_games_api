@@ -1,30 +1,22 @@
 package com.castruche.cast_games_api.service;
 
-import com.castruche.cast_games_api.configuration.JwtUtil;
 import com.castruche.cast_games_api.dao.ContactRepository;
-import com.castruche.cast_games_api.dao.UserRepository;
-import com.castruche.cast_games_api.dto.ContactDto;
+import com.castruche.cast_games_api.dto.contact.ContactDto;
 import com.castruche.cast_games_api.dto.player.PlayerExtraLightDto;
 import com.castruche.cast_games_api.dto.standardResponse.BooleanResponseDto;
 import com.castruche.cast_games_api.dto.user.UserDto;
-import com.castruche.cast_games_api.dto.util.ConnectedUserDto;
-import com.castruche.cast_games_api.dto.util.MailUpdateDto;
-import com.castruche.cast_games_api.dto.util.PasswordDto;
 import com.castruche.cast_games_api.entity.Contact;
 import com.castruche.cast_games_api.entity.Player;
 import com.castruche.cast_games_api.entity.User;
 import com.castruche.cast_games_api.formatter.ContactFormatter;
 import com.castruche.cast_games_api.formatter.UserFormatter;
 import com.castruche.cast_games_api.service.util.MailService;
-import com.castruche.cast_games_api.service.util.SettingService;
 import com.castruche.cast_games_api.service.util.TypeFormatService;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -360,6 +352,22 @@ public class ContactService extends GenericService<Contact, ContactDto>{
             contact.setContact(user.getPlayer());
             this.contactRepository.save(contact);
         }
+    }
+
+    public List<PlayerExtraLightDto> getActiveContacts(){
+        Player connectedPlayer = this.connectedUserService.getCurrentPlayer();
+        List<PlayerExtraLightDto> contacts = new ArrayList<>();
+        if(connectedPlayer != null){
+            for(Contact contact : connectedPlayer.getContacts()){
+                if(contact.isActive() && !contact.isBlocked()){
+                    PlayerExtraLightDto playerExtraLightDto = new PlayerExtraLightDto();
+                    playerExtraLightDto.setId(contact.getContact().getId());
+                    playerExtraLightDto.setUsername(contact.getContact().getUsername());
+                    contacts.add(playerExtraLightDto);
+                }
+            }
+        }
+        return contacts;
     }
 
 }
