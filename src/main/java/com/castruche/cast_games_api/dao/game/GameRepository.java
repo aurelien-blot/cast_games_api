@@ -1,6 +1,6 @@
-package com.castruche.cast_games_api.dao;
+package com.castruche.cast_games_api.dao.game;
 
-import com.castruche.cast_games_api.entity.Game;
+import com.castruche.cast_games_api.entity.game.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

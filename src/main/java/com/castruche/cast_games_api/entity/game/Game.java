@@ -1,6 +1,10 @@
-package com.castruche.cast_games_api.dto;
+package com.castruche.cast_games_api.entity.game;
 
-public class GameDto extends AbstractDto {
+import com.castruche.cast_games_api.entity.AbstractEntity;
+import jakarta.persistence.Entity;
+
+@Entity
+public class Game extends AbstractEntity {
     private String name;
     private String description;
 

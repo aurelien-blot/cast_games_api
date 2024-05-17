@@ -1,4 +1,6 @@
-package com.castruche.cast_games_api.dto;
+package com.castruche.cast_games_api.dto.game;
+
+import com.castruche.cast_games_api.dto.AbstractDto;
 
 public class GameExtraLightDto extends AbstractDto {
     private String name;

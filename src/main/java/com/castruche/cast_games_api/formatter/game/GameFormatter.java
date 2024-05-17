@@ -1,16 +1,15 @@
-package com.castruche.cast_games_api.formatter;
+package com.castruche.cast_games_api.formatter.game;
 
-import com.castruche.cast_games_api.dto.GameDto;
-import com.castruche.cast_games_api.dto.GameDto;
-import com.castruche.cast_games_api.dto.GameExtraLightDto;
-import com.castruche.cast_games_api.entity.Game;
-import com.castruche.cast_games_api.entity.Game;
+import com.castruche.cast_games_api.dto.game.GameDto;
+import com.castruche.cast_games_api.dto.game.GameExtraLightDto;
+import com.castruche.cast_games_api.entity.game.Game;
+import com.castruche.cast_games_api.formatter.IFormatter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class GameFormatter implements IFormatter<Game, GameDto>{
+public class GameFormatter implements IFormatter<Game, GameDto> {
 
     @Override
     public GameDto entityToDto(Game entity) {

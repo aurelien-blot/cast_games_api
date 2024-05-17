@@ -1,8 +1,8 @@
-package com.castruche.cast_games_api.controller;
+package com.castruche.cast_games_api.controller.game;
 
-import com.castruche.cast_games_api.dto.GameDto;
-import com.castruche.cast_games_api.dto.GameExtraLightDto;
-import com.castruche.cast_games_api.service.GameService;
+import com.castruche.cast_games_api.dto.game.GameDto;
+import com.castruche.cast_games_api.dto.game.GameExtraLightDto;
+import com.castruche.cast_games_api.service.game.GameService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

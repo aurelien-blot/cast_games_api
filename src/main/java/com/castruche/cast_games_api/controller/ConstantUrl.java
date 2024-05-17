@@ -11,4 +11,7 @@ public class ConstantUrl {
     public static final String CONTACT = ROOT + "/contact";
     public static final String MESSAGE = ROOT + "/message";
     public static final String CONVERSATION = ROOT + "/conversation";
+    public static final String ELEMENT = GAME + "/element";
+    public static final String ELEMENT_TYPE = ELEMENT + "/type";
+    public static final String ELEMENT_COLOR = ELEMENT + "/color";
 }
