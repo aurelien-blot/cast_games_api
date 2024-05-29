@@ -27,7 +27,7 @@ public class GameDto extends AbstractDto {
 
     private List<ActionDto> actionList;
 
-    private IndividualScoreSheetDto individualScoreSheet;
+    private List<IndividualScoreSheetDto> individualScoreSheet;
 
     public String getActionType() {
         return actionType;
@@ -93,11 +93,11 @@ public class GameDto extends AbstractDto {
         this.actionList = actionList;
     }
 
-    public IndividualScoreSheetDto getIndividualScoreSheet() {
+    public List<IndividualScoreSheetDto> getIndividualScoreSheet() {
         return individualScoreSheet;
     }
 
-    public void setIndividualScoreSheet(IndividualScoreSheetDto individualScoreSheet) {
+    public void setIndividualScoreSheet(List<IndividualScoreSheetDto> individualScoreSheet) {
         this.individualScoreSheet = individualScoreSheet;
     }
 
