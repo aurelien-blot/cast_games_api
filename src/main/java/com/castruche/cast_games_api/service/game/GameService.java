@@ -4,6 +4,7 @@ import com.castruche.cast_games_api.dao.game.GameRepository;
 import com.castruche.cast_games_api.dto.game.GameDto;
 import com.castruche.cast_games_api.dto.game.GameExtraLightDto;
 import com.castruche.cast_games_api.dto.game.component.ActionDto;
+import com.castruche.cast_games_api.dto.game.component.EventActionDto;
 import com.castruche.cast_games_api.dto.game.component.IndividualScoreSheetDto;
 import com.castruche.cast_games_api.dto.game.component.PlayerDataDto;
 import com.castruche.cast_games_api.entity.game.Game;
@@ -91,6 +92,42 @@ public class GameService extends GenericService<Game, GameDto> {
 
         return gameDto;
 
+    }
+
+    public GameDto getBattle(){
+        GameDto gameDto = new GameDto();
+        gameDto.setName("Bataille");
+        gameDto.setActionType("SIMULTANEOUS");
+
+        PlayerDataDto playerDataDto = new PlayerDataDto();
+        playerDataDto.setMinPlayer(2);
+        playerDataDto.setMaxPlayer(2);
+        playerDataDto.setOrderMode("SAME_TIME");
+
+        gameDto.setPlayerData(playerDataDto);
+
+        gameDto.setStartMode("RANDOM");
+        gameDto.setEndMode("NO_CARD");
+        gameDto.setShowScore(false);
+        gameDto.setTimeAfterRound(2);
+        gameDto.setActionList(new ArrayList<>());
+        gameDto.setEventActionList(new ArrayList<>());
+
+        ActionDto playCard = new ActionDto();
+        playCard.setType("PLAY_CARD");
+        playCard.setIndex(1);
+        playCard.setRequired(true);
+        playCard.setContinueMode(false);
+        playCard.setArea("CARD");
+        gameDto.getActionList().add(playCard);
+
+        EventActionDto eventActionDto = new EventActionDto();
+        eventActionDto.setType("CARD_IN_POT");
+        eventActionDto.setCondition("DRAW");
+        eventActionDto.setArea("CARD");
+        gameDto.getEventActionList().add(eventActionDto);
+
+        return gameDto;
     }
 
 }

@@ -2,6 +2,7 @@ package com.castruche.cast_games_api.dto.game;
 
 import com.castruche.cast_games_api.dto.AbstractDto;
 import com.castruche.cast_games_api.dto.game.component.ActionDto;
+import com.castruche.cast_games_api.dto.game.component.EventActionDto;
 import com.castruche.cast_games_api.dto.game.component.IndividualScoreSheetDto;
 import com.castruche.cast_games_api.dto.game.component.PlayerDataDto;
 
@@ -28,6 +29,7 @@ public class GameDto extends AbstractDto {
     private List<ActionDto> actionList;
 
     private List<IndividualScoreSheetDto> individualScoreSheet;
+    private List<EventActionDto> eventActionList;
 
     public String getActionType() {
         return actionType;
@@ -115,5 +117,13 @@ public class GameDto extends AbstractDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<EventActionDto> getEventActionList() {
+        return eventActionList;
+    }
+
+    public void setEventActionList(List<EventActionDto> eventActionList) {
+        this.eventActionList = eventActionList;
     }
 }

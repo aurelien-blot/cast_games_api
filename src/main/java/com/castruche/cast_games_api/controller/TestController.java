@@ -55,4 +55,9 @@ public class TestController {
         return gameService.getYams();
     }
 
+    @GetMapping("/battle")
+    public GameDto getBattle() {
+        return gameService.getBattle();
+    }
+
 }
